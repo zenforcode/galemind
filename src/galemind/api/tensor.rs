@@ -15,4 +15,20 @@ pub enum Data {
     BYTES(Vec<u8>)
 }
 
+pub enum DataType {
+    BOOL,
+    UINT8,
+    UINT16,
+    UINT32,
+    UINT64,
+    INT8,
+    INT16,
+    INT32,
+    INT64,
+    FP16,
+    FP32,
+    FP64,
+    BYTES
+}
+
 pub type DataShape = Vec<usize>;

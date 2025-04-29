@@ -1,4 +1,4 @@
-use crate::galemind::api::tensor::DataShape;
+use crate::galemind::api::tensor::{DataShape, DataType};
 
 struct ModelMetaDataRequest {
     name: String,
@@ -20,7 +20,7 @@ struct ModelMetaData {
 
 struct MetadataTensor {
     name: String,
-    datatype: String,
+    datatype: DataType,
     shape: DataShape
 }
 

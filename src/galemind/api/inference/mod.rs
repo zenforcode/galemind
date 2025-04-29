@@ -1,5 +1,6 @@
 use crate::galemind::api::tensor;
 use std::collections::HashMap;
+use crate::galemind::api::tensor::Data;
 
 pub struct InferenceRequest {
     id: Option<String>,
@@ -43,7 +44,7 @@ pub struct Inference {
 pub struct InferenceOutput {
     name: String,
     shape: tensor::DataShape,
-    datatype: String,
+    datatype: tensor::DataType,
     parameters: Option<HashMap<String, InferParameter>>,
     data: tensor::Data
 }
