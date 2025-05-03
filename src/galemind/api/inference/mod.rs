@@ -1,44 +1,36 @@
-use crate::galemind::api::tensor;
 use std::collections::HashMap;
-use crate::galemind::api::tensor::Data;
-
-pub struct InferenceRequest {
-    id: Option<String>,
-    parameters: Option<HashMap<String, InferParameter>>,
-    inputs: Vec<InferenceRequestInput>,
-    outputs: Option<Vec<InferenceRequestOutput>>
-}
+use crate::galemind::api::tensor::{self, Data};
 
 pub enum InferParameter {
-    BOOL(bool),
-    INT64(i64),
-    DOUBLE(f64),
-    STRING(String)
+    Bool(bool),
+    Int64(i64),
+    Double(f64),
+    String(String),
 }
 
 pub struct InferenceRequestInput {
     name: String,
     shape: tensor::DataShape,
     datatype: String,
-    data: tensor::Data
+    data: Data,
 }
 
 pub struct InferenceRequestOutput {
     name: String,
-    parameters: HashMap<String, InferParameter>
+    parameters: HashMap<String, InferParameter>,
 }
 
 pub enum InferenceResponse {
-    Ok(Inference),
-    Error(InferenceError)
+    Ok(InferenceOutput),
+    Error(InferenceError),
 }
 
-pub struct Inference {
+pub struct InferenceRequest {
     model_name: String,
     model_version: Option<String>,
     id: String,
     parameters: Option<HashMap<String, InferParameter>>,
-    outputs: Option<Vec<InferenceOutput>>
+    outputs: Option<Vec<InferenceOutput>>,
 }
 
 pub struct InferenceOutput {
@@ -46,14 +38,13 @@ pub struct InferenceOutput {
     shape: tensor::DataShape,
     datatype: tensor::DataType,
     parameters: Option<HashMap<String, InferParameter>>,
-    data: tensor::Data
+    data: Data,
 }
 
 pub struct InferenceError {
-    error: String
+    error: String,
 }
 
 pub trait InferenceProcessor {
-    fn process(&self, request: InferenceRequest) -> InferenceResponse;
+    fn process(&self, _request: InferenceRequest) -> InferenceResponse;
 }
-

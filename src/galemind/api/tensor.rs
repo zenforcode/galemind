@@ -1,4 +1,3 @@
-
 pub enum Data {
     BOOL(bool),
     UINT8(u8),
@@ -12,9 +11,12 @@ pub enum Data {
     FP16(f32),
     FP32(f32),
     FP64(f64),
-    BYTES(Vec<u8>)
+    BYTES(Vec<u8>),
+    VFLOAT(Vec<f64>),
+    VINT64(Vec<i64>),
+    VSTRING(Vec<String>),
+    
 }
-
 pub enum DataType {
     BOOL,
     UINT8,
@@ -28,7 +30,8 @@ pub enum DataType {
     FP16,
     FP32,
     FP64,
-    BYTES
+    BYTES,
+    VFLOAT
 }
 
 pub type DataShape = Vec<usize>;
