@@ -1,4 +1,4 @@
-use clap::{Command}; // Import necessary items
+use clap::Command; // Import necessary items
 
 fn main() {
     // Define the CLI app and subcommands
@@ -6,10 +6,7 @@ fn main() {
         .version("0.1")
         .author("Zenforcode Team <team@zenforcode.com>")
         .about("GaleMind ML Inference Server v0.1")
-        .subcommand(
-            Command::new("start")
-                .about("Start the server")
-        )
+        .subcommand(Command::new("start").about("Start the server"))
         .get_matches();
 
     // Handle the subcommands
