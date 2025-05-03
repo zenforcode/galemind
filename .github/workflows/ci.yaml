@@ -19,8 +19,9 @@ jobs:
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
-          override: true        
+            toolchain: stable
+            override: true
+            components: rustfmt, clippy
 
       - name: Cache cargo registry
         uses: actions/cache@v4
@@ -32,7 +33,10 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
-
+      - name: Security Audit
+        uses: actions-rs/audit-check@issue-104
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Check formatting
         run: cargo fmt -- --check
 
