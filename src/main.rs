@@ -1,5 +1,25 @@
-mod galemind;
+use clap::{Command}; // Import necessary items
 
 fn main() {
-    println!("Hello, world!");
+    // Define the CLI app and subcommands
+    let matches = Command::new("galemind")
+        .version("0.1")
+        .author("Zenforcode Team <team@zenforcode.com>")
+        .about("GaleMind ML Inference Server v0.1")
+        .subcommand(
+            Command::new("start")
+                .about("Start the server")
+        )
+        .get_matches();
+
+    // Handle the subcommands
+    match matches.subcommand() {
+        Some(("start", _sub_matches)) => {
+            // Extract the argument
+            println!("Server started with success!");
+        }
+        _ => {
+            println!("Use --help for usage.");
+        }
+    }
 }
