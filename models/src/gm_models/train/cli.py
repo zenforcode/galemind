@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 import typer
 
-from model import CNN 
+from gm_models.model import CNN 
 from typing import Final
 
 app = typer.Typer()

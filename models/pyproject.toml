@@ -10,7 +10,7 @@ dependencies = [
 ]
 
 [project.scripts]
-train = "galemind_models.train.cli:app"
+train = "gm_models.train.cli:app"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
