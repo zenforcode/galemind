@@ -1,4 +1,4 @@
-use clap::Command; 
+use clap::Command;
 
 fn main() {
     let matches = Command::new("galemind")
