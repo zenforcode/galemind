@@ -1,9 +1,6 @@
-
 # Galemind
 
-<p align="left">
-  <img src="./assets/galemind.png" alt="Galemind Logo" width="200"/>
-</p>
+![Galemind Logo](./assets/galemind.png)
 
 **StreamGale Inference Server**
 
@@ -16,8 +13,3 @@ Galemind is an inference server designed to integrate with the StreamGale framew
 - **🧠 Model Serving** – Efficient deployment and inference of machine learning models.
 - **🧩 Modular Architecture** – Clear separation between engine logic and model definitions.
 - **🐳 Containerization Support** – Includes `.devcontainer/` setup for VS Code + Docker development.
-
-
-# galemind
-
-StreamGale inference server
