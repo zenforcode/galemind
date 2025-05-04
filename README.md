@@ -2,7 +2,7 @@
 # Galemind
 
 <p align="center">
-  <img src="./assets/galemind.jpg" alt="Galemind Logo" width="200"/>
+  <img src="./assets/galemind.png" alt="Galemind Logo" width="200"/>
 </p>
 
 **StreamGale Inference Server**
