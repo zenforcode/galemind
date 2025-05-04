@@ -19,6 +19,7 @@ Galemind is an inference server designed to integrate with the StreamGale framew
 ```
 galemind/
 ├── .devcontainer/     # Configuration for development containers
+├── .github/           # GitHub action workflows
 ├── engine/            # Core engine logic for the inference server
 ├── models/            # Machine learning model definitions and training CLI
 ├── .gitignore         # Specifies files to ignore in version control
