@@ -1,4 +1,4 @@
-# MNIST Digit Classifier CLI
+# MNIST Digit Classifier Model and cli
 
 This project provides a command-line interface (CLI) to train a Convolutional Neural Network (CNN) on the MNIST dataset using PyTorch and Typer.
 
@@ -31,3 +31,22 @@ src/
 ├── uv.lock # Package lock
 └── README.md # Project documentation
 
+### Training
+
+```
+$ train --help
+                                                                                                                                                                            
+ Usage: train [OPTIONS]                                                                                                                                                      
+                                                                                                                                                                             
+ Train a CNN model on the MNIST dataset.                                                                                                                                     
+                                                                                                                                                                             
+                                                                                                                                                                             
+╭─ Options ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --epochs                    INTEGER  [default: 5]                                                                                                                         │
+│ --batch-size                INTEGER  [default: 64]                                                                                                                        │
+│ --lr                        FLOAT    [default: 0.001]                                                                                                                     │
+│ --install-completion                 Install completion for the current shell.                                                                                            │
+│ --show-completion                    Show completion for the current shell, to copy it or customize the installation.                                                     │
+│ --help                               Show this message and exit.                                                                                                          │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯ 
+```
