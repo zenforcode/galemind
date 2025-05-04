@@ -22,3 +22,12 @@ uv pip install -e .
 cli --help
 ```
 
+## Package Structure
+
+src/
+├── gm_models/train/ # Training CLI
+├── gm_models/models # Machine learning model definitions and related code
+├── pyproject.yaml # Specify dependencies
+├── uv.lock # Package lock
+└── README.md # Project documentation
+
