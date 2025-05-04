@@ -1,7 +1,7 @@
 
 # Galemind
 
-<p align="center">
+<p align="left">
   <img src="./assets/galemind.png" alt="Galemind Logo" width="200"/>
 </p>
 
