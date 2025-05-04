@@ -5,7 +5,7 @@ from torch import nn, optim
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 import typer
-
+from tqdm import tqdm
 from gm_models.model import CNN 
 from typing import Final
 
@@ -34,7 +34,7 @@ def train(epochs: int = 5, batch_size: int = 64, lr: float = 0.001):
         optimizer = optim.Adam(model.parameters(), lr=lr)
         criterion = nn.CrossEntropyLoss()
 
-        for epoch in range(epochs):
+        for epoch in tqdm(range(epochs)):
             model.train()
             for data, target in train_loader:
                 optimizer.zero_grad()
