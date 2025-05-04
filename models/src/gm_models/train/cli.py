@@ -5,9 +5,13 @@ from torch import nn, optim
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 import typer
-from tqdm import tqdm
+from tqdm.rich import tqdm, TqdmExperimentalWarning
+from rich.progress import Progress
 from gm_models.model import CNN 
 from typing import Final
+import warnings
+
+warnings.filterwarnings("ignore", category=TqdmExperimentalWarning)
 
 app = typer.Typer()
 MODEL_PATH: Final[str] = "digit_detector.pth"
@@ -26,24 +30,20 @@ def train(epochs: int = 5, batch_size: int = 64, lr: float = 0.001):
         ])
 
         train_dataset = datasets.MNIST('.', train=True, download=True, transform=transform)
-        test_dataset = datasets.MNIST('.', train=False, download=True, transform=transform)
         train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-        test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
-
+        
         model = CNN()
         optimizer = optim.Adam(model.parameters(), lr=lr)
         criterion = nn.CrossEntropyLoss()
-
-        for epoch in tqdm(range(epochs)):
+        for epoch in range(epochs):
             model.train()
-            for data, target in train_loader:
+            for data, target in tqdm(train_loader):
                 optimizer.zero_grad()
                 output = model(data)
                 loss = criterion(output, target)
                 loss.backward()
                 optimizer.step()
-            typer.echo(f"Epoch {epoch + 1}, Loss: {loss.item()}")
-
+        typer.echo(f"Epoch {epoch + 1}, Loss: {loss.item():.4f}")
         torch.save(model.state_dict(), MODEL_PATH)
         typer.echo("Model saved.")
     else:
