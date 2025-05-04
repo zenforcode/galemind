@@ -1,4 +1,4 @@
-## GaleMine - StreamGale Machine Learning Inference Service
+## GaleMind - StreamGale Machine Learning Inference Service
 
 | ![Galemind Logo](./assets/galemind.png) | Galemind is an inference server designed to integrate with the StreamGale framework. It enables the deployment and serving of machine learning models with a clean, modular, and developer-friendly architecture. |
 |:--:|:--|
