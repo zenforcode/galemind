@@ -1,7 +1,6 @@
-use clap::Command; // Import necessary items
+use clap::Command; 
 
 fn main() {
-    // Define the CLI app and subcommands
     let matches = Command::new("galemind")
         .version("0.1")
         .author("Zenforcode Team <team@zenforcode.com>")
@@ -12,7 +11,6 @@ fn main() {
     // Handle the subcommands
     match matches.subcommand() {
         Some(("start", _sub_matches)) => {
-            // Extract the argument
             println!("Server started with success!");
         }
         _ => {
