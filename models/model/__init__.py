@@ -1,2 +1,2 @@
 
-from digit_detection import CNN
+from model.digit_detection import CNN

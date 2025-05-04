@@ -10,3 +10,5 @@ dependencies = [
     "torchvision>=0.22.0",
     "typer>=0.15.3",
 ]
+[project.scripts]
+train = "train.__main__:app"

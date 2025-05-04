@@ -15,4 +15,10 @@ Install the required dependencies using [`uv`](https://github.com/astral-sh/uv):
 ```bash
 uv venv
 source .venv/bin/activate
+uv pip install -e .
 ```
+## Execute the training script 
+```bash
+cli --help
+```
+
