@@ -39,34 +39,8 @@ cd galemind
 2. **Compile the core engine (Rust):**
 
 ```bash
-make
+cargo build 
 ```
-
----
-
-## 🧪 Model Examples
-
-Model training and inference utilities are available in the `models/` directory.
-
-### Setup for Python model training
-
-1. **Create a virtual environment and install dependencies:**
-
-```bash
-cd models
-uv venv .venv
-source .venv/bin/activate
-uv pip install -e .
-```
-
-2. **Train a model using the CLI:**
-
-```bash
-train --epochs 5 --batch-size 64
-```
-
-> `train` is a Typer-based CLI tool for training a simple CNN on the MNIST dataset. The model will be saved as `digit_detector.pth`.
-
 ---
 
 ## 🧱 License
