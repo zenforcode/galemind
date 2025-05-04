@@ -19,7 +19,7 @@ uv pip install -e .
 ```
 ## Execute the training script 
 ```bash
-cli --help
+train --help
 ```
 
 ## Package Structure
