@@ -1,16 +1,17 @@
 {
-    "name": "Rust Dev Container",
-    "image": "mcr.microsoft.com/devcontainers/rust:latest",
-    "features": {
-      "rust": "latest"
-    },
-    "settings": {
-      "terminal.integrated.shell.linux": "/bin/bash"
-    },
-    "extensions": [
-      "rust-lang.rust-analyzer"
-    ],
-    "postCreateCommand": "cargo build",
-    "remoteUser": "vscode"
-  }
-  
+  "name": "Galemind Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/rust:latest",
+  "features": {
+    "rust": "latest",
+    "python": "latest"
+  },
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "extensions": [
+    "rust-lang.rust-analyzer",
+    "ms-python.python"
+  ],
+  "postCreateCommand": "cargo build && pip install uv && echo 'export PATH=$PATH:./models/galemind/models/.venv/bin' >> ~/.bashrc",
+  "remoteUser": "vscode"
+}

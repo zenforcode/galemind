@@ -13,6 +13,21 @@
 
 ---
 
+## 🗂 Repository Structure
+
+```
+galemind/
+├── .devcontainer/     # Configuration for development containers
+├── .github/           # GitHub action workflows
+├── engine/            # Core engine logic for the inference server
+├── models/            # Machine learning model definitions and training CLI
+├── .gitignore         # Specifies files to ignore in version control
+├── LICENSE            # MIT License
+└── README.md          # Project documentation
+```
+
+---
+
 ## ⚙️ Getting Started
 
 ### Prerequisites
@@ -39,11 +54,36 @@ cd galemind
 2. **Compile the core engine (Rust):**
 
 ```bash
-cargo build 
+make
 ```
+
+---
+
+## 🧪 Model Examples
+
+Model training and inference utilities are available in the `models/` directory.
+
+### Setup for Python model training
+
+1. **Create a virtual environment and install dependencies:**
+
+```bash
+cd models
+uv venv .venv
+source .venv/bin/activate
+uv pip install -e .
+```
+
+2. **Train a model using the CLI:**
+
+```bash
+train --epochs 5 --batch-size 64
+```
+
+> `train` is a Typer-based CLI tool for training a simple CNN on the MNIST dataset. The model will be saved as `digit_detector.pth`.
+
 ---
 
 ## 🧱 License
 
 This project is licensed under the [MIT License](./LICENSE).
-
