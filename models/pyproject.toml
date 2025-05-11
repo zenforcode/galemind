@@ -1,9 +1,21 @@
 [project]
-name = "models"
+name = "galemind-models"
 version = "0.1.0"
-description = "Sample models for testing package"
-readme = "README.md"
-requires-python = ">=3.11"
+description = "Sample Train models"
 dependencies = [
-    "ruff>=0.11.7",
+    "rich>=14.0.0",
+    "ruff>=0.11.8",
+    "torch>=2.7.0",
+    "torchvision>=0.22.0",
+    "tqdm>=4.67.1",
+    "typer>=0.15.3",
 ]
+
+[project.scripts]
+train = "gm_models.train.cli:app"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
