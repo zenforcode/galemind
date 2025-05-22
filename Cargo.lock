@@ -249,6 +249,8 @@ dependencies = [
  "axum",
  "clap",
  "hyper",
+ "serde",
+ "serde_json",
  "tokio",
  "tower-http",
 ]

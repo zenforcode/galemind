@@ -1,4 +1,4 @@
-mod rest_server;
+pub mod rest_server;
 use crate::rest_server::RestServerBuilder;
 use clap::Command;
 use tokio::select;
