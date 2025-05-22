@@ -1,0 +1,23 @@
+model_repository: ./models
+
+inference_engine:
+  default: "fake"
+  supported:
+    - fake
+    - tensor_rt
+
+resources:
+  required_gpu:
+    nvidia.com/gpu: 1
+  max_gpu:
+    nvidia.com/gpu: 1
+  required_cpu:
+    cpu: 1
+  max_cpu:
+    cpu: 1
+
+ports:
+  grpc: 8001
+  http: 8000
+  metrics: 8002
+
