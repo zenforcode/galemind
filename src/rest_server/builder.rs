@@ -14,7 +14,7 @@ impl RestServerBuilder {
         let addr = addr.parse().expect("Invalid address");
         let app = Router::new()
             .nest("/v2/health", new_health_check_router())
-            .nest("/v2/model", new_model_router())
+            .nest("/v2/models", new_model_router())
             .layer(TraceLayer::new_for_http());
 
         Self { addr, app }
