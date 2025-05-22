@@ -1,5 +1,5 @@
-use axum::{Router, routing::get};
-use std::{collections::HashMap, net::SocketAddr};
+use axum::{routing::get, Router};
+use std::{net::SocketAddr};
 use tower_http::trace::TraceLayer;
 
 pub struct RestServerBuilder {
@@ -17,16 +17,15 @@ impl RestServerBuilder {
     }
 
     pub async fn build(self) -> Result<(), hyper::Error> {
-        let routeTable =
-            HashMap::from([("/", Self::root_handler), ("/health", Self::health_handler)]);
-
-        for route in routeTable.iter() {}
-        self.router
+        // Instead of route table, register routes directly
+        let router = self
+            .router
             .route("/", get(Self::root_handler))
+            .route("/health", get(Self::health_handler))
             .layer(TraceLayer::new_for_http());
 
         axum::Server::bind(&self.addr)
-            .serve(&self.router.into_make_service())
+            .serve(router.into_make_service())
             .await
     }
 
@@ -38,3 +37,4 @@ impl RestServerBuilder {
         "Hello from Axum Builder!"
     }
 }
+
