@@ -1,6 +1,5 @@
 use clap::Command;
-
-mod server;
+use crate::rest_server::RestServerBuilder;
 
 #[tokio::main]
 async fn main() {
@@ -11,10 +10,15 @@ async fn main() {
         .subcommand(Command::new("start").about("Start the server"))
         .get_matches();
 
-    // Handle the subcommands
     match matches.subcommand() {
         Some(("start", _sub_matches)) => {
             println!("Server started with success!");
+            if let Err(e) = RestServerBuilder::new("127.0.0.1:3000")
+                .build()
+                .await
+            {
+                eprintln!("Server failed to start: {}", e);
+            }
         }
         _ => {
             println!("Use --help for usage.");
