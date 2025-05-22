@@ -1,4 +1,5 @@
-use crate::rest_server::healthcheck::new_router;
+use crate::rest_server::healthcheck::new_health_check_router;
+use crate::rest_server::model::new_model_router;
 use anyhow::Result;
 use std::net::SocketAddr;
 use tower_http::trace::TraceLayer;
@@ -12,7 +13,8 @@ impl RestServerBuilder {
     pub fn configure(addr: &str) -> Self {
         let addr = addr.parse().expect("Invalid address");
         let app = Router::new()
-            .nest("/v2/health", new_router())
+            .nest("/v2/health", new_health_check_router())
+            .nest("/v2/model",new_model_router())
             .layer(TraceLayer::new_for_http());
 
         Self { addr, app }
