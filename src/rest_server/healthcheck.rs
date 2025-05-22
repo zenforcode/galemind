@@ -1,10 +1,11 @@
-use axum::response::IntoResponse;
-use axum::{Router, routing::get};
+use axum::{Router, extract::Path, response::IntoResponse, routing::get};
+use std::collections::HashMap;
 
-async fn liveness_handler() -> impl IntoResponse {
+async fn liveness_handler(Path(params): Path<HashMap<String, String>>) -> impl IntoResponse {
+    println!("current API version is: {}", params.get("version").unwrap());
     "OK"
 }
-async fn readiness_handler() -> impl IntoResponse {
+async fn readiness_handler(Path(_): Path<HashMap<String, String>>) -> impl IntoResponse {
     "OK"
 }
 pub fn new_health_check_router() -> Router {

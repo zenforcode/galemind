@@ -12,9 +12,10 @@ pub struct RestServerBuilder {
 impl RestServerBuilder {
     pub fn configure(addr: &str) -> Self {
         let addr = addr.parse().expect("Invalid address");
+
         let app = Router::new()
-            .nest("/v2/health", new_health_check_router())
-            .nest("/v2/models", new_model_router())
+            .nest("/{version}/health", new_health_check_router())
+            .nest("/{version}/model", new_model_router())
             .layer(TraceLayer::new_for_http());
 
         Self { addr, app }
