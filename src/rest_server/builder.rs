@@ -12,8 +12,8 @@ impl RestServerBuilder {
     pub fn with_routes(addr: &str) -> Self {
         let addr = addr.parse().expect("Invalid address");
         let app = Router::new()
-            .route("v2/health/live", get(liveness_handler))
-            .route("v2/health/ready", get(readiness_handler))
+            .route("/v2/health/live", get(liveness_handler))
+            .route("/v2/health/ready", get(readiness_handler))
             .layer(TraceLayer::new_for_http());
 
         Self { addr, app }
