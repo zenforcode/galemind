@@ -5,7 +5,7 @@ use axum::{
     response::{IntoResponse, Response},
     routing::{get, post},
 };
-// later change this to galemind::api
+//  TODO: later change this to galemind::api
 use crate::rest_server::datamodel::InferenceRequest;
 
 async fn model_ready_handler(Path(model_name): Path<String>) -> impl IntoResponse {
