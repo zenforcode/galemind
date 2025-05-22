@@ -1,3 +1,3 @@
-pub mod builder;
+mod builder;
+mod healthcheck;
 pub use builder::RestServerBuilder;
-mod handlers;

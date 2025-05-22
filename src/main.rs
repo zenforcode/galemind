@@ -1,6 +1,8 @@
 mod rest_server;
 use crate::rest_server::RestServerBuilder;
 use clap::Command;
+use tokio::select;
+
 #[tokio::main]
 async fn main() {
     let matches = Command::new("galemind")
@@ -11,13 +13,19 @@ async fn main() {
         .get_matches();
 
     match matches.subcommand() {
-        Some(("start", _sub_matches)) => {
-            println!("Server started with success!");
-            if let Err(e) = RestServerBuilder::with_routes("127.0.0.1:3000")
-                .start()
-                .await
-            {
-                eprintln!("Server failed to start: {}", e);
+        Some(("start", _)) => {
+            println!("Launching REST and gRPC servers...");
+
+            let rest_task = tokio::spawn(async {
+                RestServerBuilder::configure("127.0.0.1:3000").start().await
+            });
+            // Wait for either to fail or finish
+            select! {
+                res = rest_task => {
+                    if let Err(e) = res {
+                        eprintln!("GaleMind server failed: {:?}", e);
+                    }
+                }
             }
         }
         _ => {
