@@ -12,3 +12,6 @@ serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
 tokio = { version = "1.45.0", features = ["rt", "rt-multi-thread", "macros"] }
 tower-http = { version = "0.6.4", features = ["trace"] }
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+reqwest = { version = "0.11", features = ["json", "tokio-runtime"] }
