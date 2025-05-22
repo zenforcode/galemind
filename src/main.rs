@@ -13,7 +13,10 @@ async fn main() {
     match matches.subcommand() {
         Some(("start", _sub_matches)) => {
             println!("Server started with success!");
-            if let Err(e) = RestServerBuilder::new("127.0.0.1:3000").build().await {
+            if let Err(e) = RestServerBuilder::with_routes("127.0.0.1:3000")
+                .start()
+                .await
+            {
                 eprintln!("Server failed to start: {}", e);
             }
         }
