@@ -1,9 +1,9 @@
 use axum::{
+    Router,
     extract::{Json, Path},
     http::StatusCode,
     response::{IntoResponse, Response},
     routing::{get, post},
-    Router,
 };
 // later change this to galemind::api
 use crate::rest_server::datamodel::InferenceRequest;
