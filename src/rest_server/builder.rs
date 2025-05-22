@@ -1,11 +1,7 @@
-use axum::{
-    body::Body,
-    http::Response,
-    response::IntoResponse,
-    routing::get,
-    Router,
-};
-use crate::rest_server::handlers::{readiness_handler, liveness_handler};
+use hyper::Server;
+
+use crate::rest_server::handlers::{liveness_handler, readiness_handler};
+use axum::{Router, routing::get};
 use std::net::SocketAddr;
 use tower_http::trace::TraceLayer;
 
@@ -20,14 +16,13 @@ impl RestServerBuilder {
     }
 
     pub async fn build(self) -> Result<(), hyper::Error> {
-        let mut router = Router::new();   
+        let mut router = Router::new();
 
         router = router
             .route("/health/live", get(liveness_handler))
             .route("/health/ready", get(readiness_handler))
             .layer(TraceLayer::new_for_http());
-
-        axum::Server::bind(&self.addr)
+        Server::bind(&self.addr)
             .serve(router.into_make_service())
             .await
     }

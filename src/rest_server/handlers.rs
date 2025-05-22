@@ -1,8 +1,9 @@
+use axum::response::IntoResponse;
 
-async fn liveness_handler() -> impl IntoResponse {
+pub async fn liveness_handler() -> impl IntoResponse {
     "OK"
 }
 
-async fn readyness_handler() -> impl IntoResponse {
+pub async fn readiness_handler() -> impl IntoResponse {
     "OK"
 }
