@@ -1,6 +1,6 @@
+mod datamodel;
 mod healthcheck;
 mod model;
-mod datamodel;
 
 use crate::healthcheck::new_health_check_router;
 use crate::model::new_model_router;

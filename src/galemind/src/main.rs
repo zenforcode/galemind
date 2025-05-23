@@ -1,6 +1,5 @@
-pub mod rest_server;
-use crate::rest_server::RestServerBuilder;
 use clap::Command;
+use rest_server::RestServerBuilder;
 use tokio::select;
 
 #[tokio::main]
