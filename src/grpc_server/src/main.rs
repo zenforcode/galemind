@@ -10,7 +10,7 @@ pub mod grpc_server {
 }
 
 use grpc_server::{
-    PredictionService, PredictionServer,
+    prediction_service_server::{PredictionService, PredictionServiceServer},
     ServerLiveRequest, ServerLiveResponse,
     ServerReadyRequest, ServerReadyResponse,
 };
@@ -27,7 +27,7 @@ impl PredictionService for PredictionServiceImpl {
         println!("Got a request: {:?}", request);
 
         let reply = ServerLiveResponse {
-            message: "Server is live".into(),
+            live: true,
         };
 
         Ok(Response::new(reply))
@@ -40,7 +40,7 @@ impl PredictionService for PredictionServiceImpl {
         println!("Got a request: {:?}", request);
 
         let reply = ServerReadyResponse {
-            message: "Server is ready".into(),
+            ready: true,
         };
 
         Ok(Response::new(reply))
@@ -55,7 +55,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("GRPC PredictionService server listening on {}", addr);
 
     Server::builder()
-        .add_service(PredictionServer::new(prediction_service))
+        .add_service(PredictionServiceServer::new(prediction_service))
         .serve(addr)
         .await?;
 
