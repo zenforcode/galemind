@@ -23,6 +23,7 @@ jobs:
             override: true
             components: rustfmt, clippy
 
+      
       - name: Cache cargo registry
         uses: actions/cache@v4
         with:
@@ -33,8 +34,15 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
+      
+      - name: Install protoc
+        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
+
       - name: Check formatting
         run: cargo fmt -- --check
+
+      - name: Generate protobuf code
+        run: cargo build --features "build-proto"
 
       - name: Build
         run: cargo build --verbose
