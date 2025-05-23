@@ -5,8 +5,8 @@ edition = "2024"
 
 [dependencies]
 tokio = { version = "1.45.0", features = ["rt-multi-thread", "macros", "net"] }
-prost = "0.13.5"
-tonic = "0.13.1"
+tonic = { version = "0.11", features = ["transport"] }
+prost = "0.12"
 
 [build-dependencies]
-tonic-build = "0.13.1"
+tonic-build = "0.11"
