@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use crate::api::tensor::{self, Data};
+use std::collections::HashMap;
 
 pub enum InferParameter {
     Bool(bool),

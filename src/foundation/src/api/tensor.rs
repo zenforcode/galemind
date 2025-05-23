@@ -15,7 +15,6 @@ pub enum Data {
     VFLOAT(Vec<f64>),
     VINT64(Vec<i64>),
     VSTRING(Vec<String>),
-    
 }
 pub enum DataType {
     BOOL,
@@ -31,7 +30,7 @@ pub enum DataType {
     FP32,
     FP64,
     BYTES,
-    VFLOAT
+    VFLOAT,
 }
 
 pub type DataShape = Vec<usize>;
