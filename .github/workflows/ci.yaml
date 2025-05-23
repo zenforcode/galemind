@@ -41,9 +41,6 @@ jobs:
       - name: Check formatting
         run: cargo fmt -- --check
 
-      - name: Generate protobuf code
-        run: cargo build --features "build-proto"
-
       - name: Build
         run: cargo build --verbose
 
