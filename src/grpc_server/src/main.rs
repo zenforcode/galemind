@@ -10,16 +10,16 @@ pub mod grpc_server {
 }
 
 use grpc_server::{
-    grpc_server::{HealthCheckService, HealthCheckServer},
+    PredictionService, PredictionServer,
     ServerLiveRequest, ServerLiveResponse,
     ServerReadyRequest, ServerReadyResponse,
 };
 
 #[derive(Debug, Default)]
-pub struct HealthCheckServiceImpl;
+pub struct PredictionServiceImpl;
 
 #[tonic::async_trait]
-impl HealthCheckService for HealthCheckServiceImpl {
+impl PredictionService for PredictionServiceImpl {
     async fn server_live(
         &self,
         request: Request<ServerLiveRequest>,
@@ -50,12 +50,12 @@ impl HealthCheckService for HealthCheckServiceImpl {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let addr = "[::1]:50051".parse()?;
-    let health_check_service = HealthCheckServiceImpl::default();
+    let prediction_service = PredictionServiceImpl::default();
 
-    println!("HealthCheck gRPC server listening on {}", addr);
+    println!("GRPC PredictionService server listening on {}", addr);
 
     Server::builder()
-        .add_service(HealthCheckServer::new(health_check_service))
+        .add_service(PredictionServer::new(prediction_service))
         .serve(addr)
         .await?;
 

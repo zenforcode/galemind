@@ -1,3 +1,3 @@
 fn main() {
-    tonic_build::compile_protos("../proto/model.proto").unwrap();
+    tonic_build::compile_protos("proto/prediction/prediction.proto").unwrap();
 }
