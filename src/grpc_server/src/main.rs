@@ -1,10 +1,7 @@
+
 use tonic::{transport::Server, Request, Response, Status};
 
 // Include the generated protobuf code
-// The `my_service` module name comes from the `package mypackage;` in your .proto
-// and the `tonic-build`'s default behavior.
-// If you named your package `my_service` in the .proto, it would be `crate::my_service`.
-// It's usually good practice to use `super::` or `crate::` for generated modules.
 pub mod grpc_server {
     tonic::include_proto!("grpc_server"); // This macro includes the generated code.
 }
@@ -47,17 +44,48 @@ impl PredictionService for PredictionServiceImpl {
     }
 }
 
+/// Builder for setting up the gRPC server
+pub struct GrpcServerBuilder {
+    address: String,
+    service_impl: PredictionServiceImpl,
+}
+
+impl GrpcServerBuilder {
+    pub fn new() -> Self {
+        Self {
+            address: "[::1]:50051".to_string(),
+            service_impl: PredictionServiceImpl::default(),
+        }
+    }
+
+    pub fn with_address(mut self, address: &str) -> Self {
+        self.address = address.to_string();
+        self
+    }
+
+    pub fn with_service(mut self, service: PredictionServiceImpl) -> Self {
+        self.service_impl = service;
+        self
+    }
+
+    pub async fn build(self) -> Result<(), Box<dyn std::error::Error>> {
+        let addr = self.address.parse()?;
+
+        println!("GRPC PredictionService server listening on {}", addr);
+
+        Server::builder()
+            .add_service(PredictionServer::new(self.service_impl))
+            .serve(addr)
+            .await?;
+
+        Ok(())
+    }
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = "[::1]:50051".parse()?;
-    let prediction_service = PredictionServiceImpl::default();
-
-    println!("GRPC PredictionService server listening on {}", addr);
-
-    Server::builder()
-        .add_service(PredictionServer::new(prediction_service))
-        .serve(addr)
-        .await?;
-
-    Ok(())
+    GrpcServerBuilder::new()
+        .with_address("[::1]:50051")
+        .build()
+        .await
 }
