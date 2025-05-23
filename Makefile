@@ -4,5 +4,5 @@ test:
 	cargo test
 format:
 	cargo fmt
-run: 
-	cargo run start
+run:
+	cargo run -p galemind start
