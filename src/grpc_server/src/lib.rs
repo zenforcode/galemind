@@ -81,11 +81,3 @@ impl GrpcServerBuilder {
         Ok(())
     }
 }
-
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    GrpcServerBuilder::new()
-        .with_address("[::1]:50051")
-        .build()
-        .await
-}
