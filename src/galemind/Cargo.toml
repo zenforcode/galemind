@@ -1,0 +1,10 @@
+[package]
+name = "galemind"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+clap = "4.5.38"
+foundation = { path = "../foundation" }
+grpc_server = { path = "../grpc_server" }
+rest_server = { path = "../rest_server" }

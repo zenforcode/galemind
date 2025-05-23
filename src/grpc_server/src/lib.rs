@@ -1,5 +1,4 @@
-
-use tonic::{transport::Server, Request, Response, Status};
+use tonic::{Request, Response, Status, transport::Server};
 
 // Include the generated protobuf code
 pub mod grpc_server {
@@ -7,9 +6,8 @@ pub mod grpc_server {
 }
 
 use grpc_server::{
+    ServerLiveRequest, ServerLiveResponse, ServerReadyRequest, ServerReadyResponse,
     prediction_service_server::{PredictionService, PredictionServiceServer},
-    ServerLiveRequest, ServerLiveResponse,
-    ServerReadyRequest, ServerReadyResponse,
 };
 
 #[derive(Debug, Default)]
@@ -23,9 +21,7 @@ impl PredictionService for PredictionServiceImpl {
     ) -> Result<Response<ServerLiveResponse>, Status> {
         println!("Got a request: {:?}", request);
 
-        let reply = ServerLiveResponse {
-            live: true,
-        };
+        let reply = ServerLiveResponse { live: true };
 
         Ok(Response::new(reply))
     }
@@ -36,9 +32,7 @@ impl PredictionService for PredictionServiceImpl {
     ) -> Result<Response<ServerReadyResponse>, Status> {
         println!("Got a request: {:?}", request);
 
-        let reply = ServerReadyResponse {
-            ready: true,
-        };
+        let reply = ServerReadyResponse { ready: true };
 
         Ok(Response::new(reply))
     }
@@ -80,12 +74,4 @@ impl GrpcServerBuilder {
 
         Ok(())
     }
-}
-
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    GrpcServerBuilder::new()
-        .with_address("[::1]:50051")
-        .build()
-        .await
 }
