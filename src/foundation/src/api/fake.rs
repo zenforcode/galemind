@@ -1,9 +1,9 @@
-use std::collections::HashMap;
 use super::inference::{
     InferParameter, InferenceError, InferenceOutput, InferenceProcessor, InferenceRequest,
     InferenceResponse,
 };
 use super::tensor::{Data, DataType};
+use std::collections::HashMap;
 
 /// A dummy implementation of the `InferenceProcessor` trait used for testing or development.
 pub struct FakeInferenceProcessor;
@@ -33,7 +33,7 @@ impl InferenceProcessor for FakeInferenceProcessor {
 #[cfg(test)]
 mod tests {
     use super::*;
- 
+
     #[test]
     fn fake_inference_processor_returns_expected_response() {
         let processor = FakeInferenceProcessor;
@@ -56,7 +56,7 @@ mod tests {
                 assert_eq!(output.name, "output_1");
                 assert_eq!(output.shape, vec![1, 3]);
                 match output.data {
-                    Data::VFLOAT(values) => assert_eq!(values, vec![0.1, 0.5, 0.4])
+                    Data::VFLOAT(values) => assert_eq!(values, vec![0.1, 0.5, 0.4]),
                 }
             }
             _ => panic!("Expected InferenceResponse::Ok variant"),

@@ -1,5 +1,5 @@
 pub enum Data {
-    VFLOAT(Vec<f64>)
+    VFLOAT(Vec<f64>),
 }
 #[derive(PartialEq)]
 pub enum DataType {

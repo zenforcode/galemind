@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use super::tensor::{Data, DataShape, DataType};
+use std::collections::HashMap;
 pub enum InferParameter {
     Bool(bool),
     Int64(i64),
@@ -33,5 +33,5 @@ pub struct InferenceError {
 }
 
 pub trait InferenceProcessor {
-     fn process(&self, _request: InferenceRequest) -> InferenceResponse;
+    fn process(&self, _request: InferenceRequest) -> InferenceResponse;
 }
