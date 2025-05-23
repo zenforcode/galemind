@@ -1,23 +1,10 @@
-use crate::api::tensor::{self, Data};
 use std::collections::HashMap;
-
+use super::tensor::{Data, DataShape, DataType};
 pub enum InferParameter {
     Bool(bool),
     Int64(i64),
     Double(f64),
     String(String),
-}
-
-pub struct InferenceRequestInput {
-    pub name: String,
-    pub shape: tensor::DataShape,
-    pub datatype: String,
-    pub data: Data,
-}
-
-pub struct InferenceRequestOutput {
-    pub name: String,
-    pub parameters: HashMap<String, InferParameter>,
 }
 
 pub enum InferenceResponse {
@@ -35,8 +22,8 @@ pub struct InferenceRequest {
 
 pub struct InferenceOutput {
     pub name: String,
-    pub shape: tensor::DataShape,
-    pub datatype: tensor::DataType,
+    pub shape: DataShape,
+    pub datatype: DataType,
     pub parameters: Option<HashMap<String, InferParameter>>,
     pub data: Data,
 }
@@ -46,5 +33,5 @@ pub struct InferenceError {
 }
 
 pub trait InferenceProcessor {
-    fn process(&self, _request: InferenceRequest) -> InferenceResponse;
+     fn process(&self, _request: InferenceRequest) -> InferenceResponse;
 }
