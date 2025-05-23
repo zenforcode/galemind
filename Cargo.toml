@@ -1,6 +1,5 @@
 [workspace]
 members = [
-    "src/foundation",
     "src/grpc_server",
     "src/rest_server",
     "src/galemind",
