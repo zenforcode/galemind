@@ -362,6 +362,7 @@ dependencies = [
  "clap",
  "hyper 1.6.0",
  "reqwest",
+ "rest_server",
  "serde",
  "serde_json",
  "tokio",
@@ -929,6 +930,21 @@ dependencies = [
  "wasm-bindgen-futures",
  "web-sys",
  "winreg",
+]
+
+[[package]]
+name = "rest_server"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "clap",
+ "hyper 1.6.0",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tower-http",
 ]
 
 [[package]]
