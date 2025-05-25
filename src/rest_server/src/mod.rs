@@ -1,5 +1,5 @@
-mod builder;
-mod datamodel;
+mod data_model;
+mod data_server;
 mod healthcheck;
 mod model;
-pub use builder::RestServerBuilder;
+mod server;

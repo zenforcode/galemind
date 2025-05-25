@@ -1,9 +1,12 @@
 mod data_model;
+mod data_server;
 mod healthcheck;
 mod model;
+mod server;
 
 use crate::healthcheck::new_health_check_router;
 use crate::model::new_model_router;
+use crate::server::new_server_router;
 use anyhow::Result;
 use axum::{Router, serve};
 use std::net::SocketAddr;
@@ -18,6 +21,7 @@ impl RestServerBuilder {
         let addr = addr.parse().expect("Invalid address");
 
         let app = Router::new()
+            .nest("/{version}", new_server_router())
             .nest("/{version}/health", new_health_check_router())
             .nest("/{version}/models", new_model_router())
             .layer(TraceLayer::new_for_http());
