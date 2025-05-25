@@ -1,8 +1,7 @@
 use axum::{Router, extract::Path, response::IntoResponse, routing::get};
 use std::collections::HashMap;
 
-async fn liveness_handler(Path(params): Path<HashMap<String, String>>) -> impl IntoResponse {
-    println!("current API version is: {}", params.get("version").unwrap());
+async fn liveness_handler(Path(_): Path<HashMap<String, String>>) -> impl IntoResponse {
     "OK"
 }
 async fn readiness_handler(Path(_): Path<HashMap<String, String>>) -> impl IntoResponse {
