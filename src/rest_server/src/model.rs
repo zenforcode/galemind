@@ -7,7 +7,7 @@ use axum::{
 };
 
 //  TODO: later change this to galemind::api
-use crate::datamodel::InferenceRequest;
+use crate::data_model::InferenceRequest;
 
 async fn model_ready_handler(Path(model_name): Path<String>) -> impl IntoResponse {
     format!("Model: {}, Ready!", model_name)
@@ -35,14 +35,14 @@ async fn model_version_infer_handler(
 
 pub fn new_model_router() -> Router {
     Router::new()
-        .route("/models/{model_name}/ready", get(model_ready_handler))
+        .route("/{model_name}/ready", get(model_ready_handler))
         .route(
-            "/models/{model_name}/versions/{model_version}/ready",
+            "/{model_name}/versions/{model_version}/ready",
             get(model_version_ready_handler),
         )
-        .route("/models/{model_name}/infer", post(model_infer_handler))
+        .route("/{model_name}/infer", post(model_infer_handler))
         .route(
-            "/models/{model_name}/versions/{model_version}/infer",
+            "/{model_name}/versions/{model_version}/infer",
             post(model_version_infer_handler),
         )
 }

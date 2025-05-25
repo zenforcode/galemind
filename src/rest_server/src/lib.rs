@@ -1,4 +1,4 @@
-mod datamodel;
+mod data_model;
 mod healthcheck;
 mod model;
 
@@ -19,7 +19,7 @@ impl RestServerBuilder {
 
         let app = Router::new()
             .nest("/{version}/health", new_health_check_router())
-            .nest("/{version}/model", new_model_router())
+            .nest("/{version}/models", new_model_router())
             .layer(TraceLayer::new_for_http());
 
         Self { addr, app }
