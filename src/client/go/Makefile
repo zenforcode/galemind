@@ -28,6 +28,6 @@ generate:
 ## Remove generated files
 clean:
 	@echo "Cleaning generated files in $(OUT_DIR)"
-	rm -rf $(OUT_DIR)/*
+	rm -rf $(OUT_DIR)
 
 
