@@ -19,7 +19,7 @@
 galemind/
 ├── .devcontainer/     # Configuration for development containers
 ├── .github/           # GitHub action workflows
-├── engine/            # Core engine logic for the inference server
+├── src/               # Modulues for inference server
 ├── models/            # Machine learning model definitions and training CLI
 ├── .gitignore         # Specifies files to ignore in version control
 ├── LICENSE            # MIT License

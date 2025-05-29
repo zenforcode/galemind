@@ -1,9 +1,6 @@
 use clap::Command;
-use rest_server::RestServerBuilder;
-use tokio::select;
 
-#[tokio::main]
-async fn main() {
+fn main() {
     let matches = Command::new("galemind")
         .version("0.1")
         .author("Zenforcode Team <team@zenforcode.com>")
@@ -11,21 +8,10 @@ async fn main() {
         .subcommand(Command::new("start").about("Start the server"))
         .get_matches();
 
+    // Handle the subcommands
     match matches.subcommand() {
-        Some(("start", _)) => {
-            println!("Launching REST and gRPC servers...");
-
-            let rest_task = tokio::spawn(async {
-                RestServerBuilder::configure("127.0.0.1:3000").start().await
-            });
-            // Wait for either to fail or finish
-            select! {
-                res = rest_task => {
-                    if let Err(e) = res {
-                        eprintln!("GaleMind server failed: {:?}", e);
-                    }
-                }
-            }
+        Some(("start", _sub_matches)) => {
+            println!("Server started with success!");
         }
         _ => {
             println!("Use --help for usage.");
