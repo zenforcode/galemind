@@ -16,6 +16,6 @@
     "ms-python.python",
     "golang.Go"
   ],
-  "postCreateCommand": "cargo build && pip install uv && echo 'export PATH=$PATH:./models/galemind/models/.venv/bin' >> ~/.bashrc",
+  "postCreateCommand": "sudo apt-get install -y protobuf-compiler  && cargo build && pip install uv && echo 'export PATH=$PATH:./models/galemind/models/.venv/bin' >> ~/.bashrc",
   "remoteUser": "vscode"
 }

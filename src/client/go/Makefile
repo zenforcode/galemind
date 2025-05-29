@@ -1,11 +1,8 @@
-# Makefile for Python gRPC stub generation
+# Makefile for Go lang gRPC stub generation
 
-# You can override these on the command line:
-# make PROTO_DIR=path/to/protos OUT_DIR=path/to/output
 PROTO_DIR ?= ../../grpc_server/proto/prediction
 OUT_DIR   ?= ./galemind
 
-# Proto file name (without path)
 PROTO_FILE = prediction.proto
 
 .PHONY: all generate clean
@@ -16,7 +13,9 @@ setup:
 
 all: setup generate
 
-## Generate Python gRPC code from .proto
+build:
+	go build
+
 generate:
 	@echo "Generating Go Lang gRPC stubs from $$PROTO_DIR/$$PROTO_FILE → $$OUT_DIR"
 	mkdir -p $(OUT_DIR)
