@@ -68,6 +68,8 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
 
+    - name: Generate code
+      run: cd src/client && make clean && make generate
     - name: Build Go
       run: cd src/client/go && go build ./...
 
