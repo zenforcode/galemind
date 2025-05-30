@@ -16,17 +16,28 @@ pub struct InferenceRequest {
     pub parameters: Option<Parameters>,
 
     /// Required input tensors (at least one input required)
-    pub inputs: Vec<RequestInput>,
+    pub inputs: Vec<MetadataTensor>,
 
     /// Optional requested outputs; if None, all model outputs are returned
     #[serde(skip_serializing_if = "Option::is_none")]
     pub outputs: Option<Vec<RequestOutput>>,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct InferenceResponse {
+    /// Optional identifier for this request
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub id: Option<String>,
+
+    /// Optional requested outputs; if None, all model outputs are returned
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub outputs: Option<Vec<MetadataTensor>>,
+}
+
 /// Represents an input tensor to the model
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct RequestInput {
+pub struct MetadataTensor {
     /// Name of the input tensor
     pub name: String,
 
@@ -41,7 +52,8 @@ pub struct RequestInput {
     pub parameters: Option<Parameters>,
 
     /// Tensor data (see Tensor Data Types for more info)
-    pub data: TensorData,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub data: Option<TensorData>,
 }
 
 /// Represents requested output tensor(s)
@@ -57,7 +69,7 @@ pub struct RequestOutput {
 }
 
 /// Enum to hold tensor data (extendable based on supported tensor types)
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
 pub enum TensorData {
     // Numeric data as a flat array of numbers (integers or floats)
@@ -65,4 +77,22 @@ pub enum TensorData {
     Int64(Vec<i64>),
     Float32(Vec<f32>),
     Float64(Vec<f64>),
+    Bool(Vec<bool>),
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MetadataModelResponse {
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub versions: Option<Vec<String>>,
+    pub platform: Vec<String>,
+    pub inputs: Vec<MetadataTensor>,
+    pub outputs: Vec<MetadataTensor>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ErrorMetadataModelResponse {
+    pub error: String,
 }

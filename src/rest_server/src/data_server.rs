@@ -7,3 +7,9 @@ pub struct ServerMetadataResponse {
     pub version: String,
     pub extensions: Vec<String>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ErrorServerMetadataResponse {
+    pub error: String,
+}
