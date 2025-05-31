@@ -1,4 +1,4 @@
-name: Rust CI
+name: Galemind
 
 on:
   push:
@@ -9,6 +9,11 @@ on:
       - '**'
 
 jobs:
+  name: build-and-test
+
+on: [push, pull_request]
+
+jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
@@ -16,14 +21,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Rust setup
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
-            toolchain: stable
-            override: true
-            components: rustfmt, clippy
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
 
-      
       - name: Cache cargo registry
         uses: actions/cache@v4
         with:
@@ -34,16 +39,40 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
-      
+
       - name: Install protoc
         run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
 
-      - name: Check formatting
+      - name: Check Rust formatting
         run: cargo fmt -- --check
 
-      - name: Build
+      - name: Build Rust
         run: cargo build --verbose
 
-      - name: Run tests
+      - name: Test Rust
         run: cargo test --verbose
+
+  build-client-go-sdk:
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.21'
+
+    - name: Cache Go modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Generate code
+      run: cd src/client && make clean && make generate
+    - name: Build Go
+      run: cd src/client/go && go build ./...
+
+    - name: Test Go
+      run: cd src/client/go && go test ./...
 
