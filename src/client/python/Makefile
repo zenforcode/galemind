@@ -2,8 +2,8 @@
 
 # You can override these on the command line:
 # make PROTO_DIR=path/to/protos OUT_DIR=path/to/output
-PROTO_DIR ?= ../grpc_server/proto/prediction
-OUT_DIR   ?= ./galemind
+PROTO_DIR ?= ../../grpc_server/proto/prediction
+OUT_DIR   ?= ./galemind/pb
 
 # Proto file name (without path)
 PROTO_FILE = prediction.proto
