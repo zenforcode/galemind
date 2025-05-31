@@ -8,19 +8,21 @@ use crate::healthcheck::new_health_check_router;
 use crate::model::new_model_router;
 use crate::server::new_server_router;
 use anyhow::Result;
+use async_trait::async_trait;
 use axum::{Router, serve};
-use foundation::{InferenceServerBuilder, InferenceServerContext};
+use foundation::{InferenceServerBuilder, InferenceServerConfig};
+use std::error::Error;
 use std::net::SocketAddr;
+use tokio::net::TcpListener;
 use tower_http::trace::TraceLayer;
-
 pub struct RestServerBuilder {
     addr: SocketAddr,
     app: Router,
 }
-
-impl RestServerBuilder {
-    pub fn configure(context: InferenceServerContext) -> Self {
-        let addr = format!("{}:{}", context.hostname, context.port)
+#[async_trait]
+impl InferenceServerBuilder for RestServerBuilder {
+    fn configure(context: InferenceServerConfig) -> Self {
+        let addr = format!("{}:{}", context.rest_hostname, context.rest_port)
             .parse()
             .expect("Invalid Host/Port");
         let app = Router::new()
@@ -31,13 +33,16 @@ impl RestServerBuilder {
 
         Self { addr, app }
     }
-    pub async fn start(self) -> Result<()> {
-        let listener = tokio::net::TcpListener::bind(self.addr)
+    async fn start(self) -> Result<(), Box<dyn Error + Send + Sync>> {
+        let listener = TcpListener::bind(self.addr)
             .await
-            .expect("Failed to bind address");
+            .map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)?;
 
-        println!("Listening on {}", listener.local_addr().unwrap());
-        serve(listener, self.app).await?;
+        let local_addr = listener.local_addr()?;
+        println!("Rest Server listening on {}", local_addr);
+        serve(listener, self.app)
+            .await
+            .map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)?;
         Ok(())
     }
 }

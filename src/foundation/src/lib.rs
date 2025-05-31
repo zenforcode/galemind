@@ -3,17 +3,19 @@ pub mod api;
 pub use api::fake::FakeInferenceProcessor;
 pub use api::inference::{InferenceRequest, InferenceResponse};
 
-use async_trait::async_trait;
 use anyhow::Result;
+use async_trait::async_trait;
 
 #[derive(Debug, Clone)]
-pub struct InferenceServerContext {
-    pub hostname: String,
-    pub port: u16,
+pub struct InferenceServerConfig {
+    pub rest_hostname: String,
+    pub rest_port: u16,
+    pub grpc_hostname: String,
+    pub grpc_port: u16,
 }
 
 #[async_trait]
 pub trait InferenceServerBuilder: Sized + Send + Sync {
-    fn configure(context: InferenceServerContext) -> Self;
-    async fn start(self) -> Result<(), Box<dyn std::error::Error>>;
+    fn configure(context: InferenceServerConfig) -> Self;
+    async fn start(self) -> Result<(), Box<dyn std::error::Error + Send + Sync>>;
 }
