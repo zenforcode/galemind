@@ -42,7 +42,8 @@ impl InferenceServerBuilder for RestServerBuilder {
         println!("Rest Server listening on {}", local_addr);
         serve(listener, self.app)
             .await
-            .map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)?;
+            .map_err(|e| Box::<dyn Error + Send + Sync>::from(e.to_string()))?;
+
         Ok(())
     }
 }
