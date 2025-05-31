@@ -9,17 +9,20 @@ use crate::model::new_model_router;
 use crate::server::new_server_router;
 use anyhow::Result;
 use axum::{Router, serve};
+use foundation::{InferenceServerBuilder, InferenceServerContext};
 use std::net::SocketAddr;
 use tower_http::trace::TraceLayer;
+
 pub struct RestServerBuilder {
     addr: SocketAddr,
     app: Router,
 }
 
 impl RestServerBuilder {
-    pub fn configure(addr: &str) -> Self {
-        let addr = addr.parse().expect("Invalid address");
-
+    pub fn configure(context: InferenceServerContext) -> Self {
+        let addr = format!("{}:{}", context.hostname, context.port)
+            .parse()
+            .expect("Invalid Host/Port");
         let app = Router::new()
             .nest("/{version}", new_server_router())
             .nest("/{version}/health", new_health_check_router())

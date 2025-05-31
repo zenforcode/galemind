@@ -1,5 +1,5 @@
+use foundation::{InferenceServerBuilder, InferenceServerContext};
 use tonic::{Request, Response, Status, transport::Server};
-use foundation::{InferenceServerContext, InferenceServerBuilder};
 // Include the generated protobuf code
 pub mod grpc_server {
     tonic::include_proto!("grpc_server"); // This macro includes the generated code.
@@ -45,13 +45,14 @@ pub struct GrpcServerBuilder {
 }
 
 impl InferenceServerBuilder for GrpcServerBuilder {
-    pub fn configure(context: InferenceServerContext) -> Self {
+    fn configure(context: InferenceServerContext) -> Self {
+        let addr = format!("{}:{}", context.hostname, context.port);
         Self {
-            address: "[::1]:50051".to_string(),
+            address: addr,
             service_impl: PredictionServiceImpl::default(),
         }
     }
-    pub async fn start(self) -> Result<(), Box<dyn std::error::Error>> {
+    async fn start(self) -> Result<(), Box<dyn std::error::Error>> {
         let addr = self.address.parse()?;
 
         println!("GRPC PredictionService server listening on {}", addr);
@@ -60,7 +61,6 @@ impl InferenceServerBuilder for GrpcServerBuilder {
             .add_service(PredictionServiceServer::new(self.service_impl))
             .serve(addr)
             .await?;
-
         Ok(())
     }
 }
