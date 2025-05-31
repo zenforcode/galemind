@@ -1,7 +1,9 @@
 # Makefile for Go lang gRPC stub generation
 
 PROTO_DIR ?= ../../grpc_server/proto/prediction
-OUT_DIR   ?= ./galemind
+GO_OUT_DIR ?= ./go/galemind
+PY_OUT_DIR ?= ./python/src/galemind
+JAVA_OUT_DIR ?= ./java/src/galemind
 
 PROTO_FILE = prediction.proto
 
