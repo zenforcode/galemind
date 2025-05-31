@@ -56,3 +56,19 @@ grpcio, grpcio-tools
 ```
 pip install grpcio grpcio-tools
 ```
+
+### Java Client
+## Location
+```
+/clients/java/
+```
+## Requirements
+- JDK 11+
+- Maven or Gradle
+- protoc-gen-grpc-java
+
+## Installation
+Install the protoc plugin:
+```
+brew install protoc-gen-grpc-java
+```
