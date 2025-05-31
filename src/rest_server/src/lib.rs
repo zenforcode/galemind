@@ -1,5 +1,5 @@
 mod data_model;
-mod data_server;
+mod metadata_model;
 mod healthcheck;
 mod model;
 mod server;

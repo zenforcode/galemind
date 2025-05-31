@@ -1,5 +1,5 @@
-use super::data_server::ServerMetadataResponse;
-use crate::data_server::ErrorServerMetadataResponse;
+use super::metadata_model::ServerMetadataResponse;
+use crate::metadata_model::ErrorServerMetadataResponse;
 use axum::{Json, Router, extract::Path, routing::get};
 use std::collections::HashMap;
 use std::time::{SystemTime, UNIX_EPOCH};

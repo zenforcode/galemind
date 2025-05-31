@@ -20,7 +20,7 @@ pub struct InferenceRequest {
 
     /// Optional requested outputs; if None, all model outputs are returned
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub outputs: Option<Vec<RequestOutput>>,
+    pub outputs: Option<Vec<TensorRequestOutput>>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -59,7 +59,7 @@ pub struct MetadataTensor {
 /// Represents requested output tensor(s)
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct RequestOutput {
+pub struct TensorRequestOutput {
     /// Name of the output tensor
     pub name: String,
 
