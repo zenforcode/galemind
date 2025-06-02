@@ -57,6 +57,12 @@ cd galemind
 make
 ```
 
+3. **Launch the server**
+
+```bash
+make run
+```
+
 ---
 
 ## 🧪 Model Examples
