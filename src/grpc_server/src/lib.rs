@@ -1,4 +1,4 @@
-use std::collections::{HashMap};
+use std::collections::HashMap;
 
 use tonic::{Request, Response, Status, transport::Server};
 
@@ -8,10 +8,12 @@ pub mod grpc_server {
 }
 
 use grpc_server::{
-    ServerLiveRequest, ServerLiveResponse, ServerReadyRequest, ServerReadyResponse,
-    ModelReadyRequest, ModelReadyResponse, ServerMetadataRequest, ServerMetadataResponse,
-    ModelMetadataRequest, ModelMetadataResponse, model_metadata_response::TensorMetadata,
-    ModelInferRequest, ModelInferResponse, model_infer_response::InferOutputTensor, InferTensorContents,
+    InferTensorContents, ModelInferRequest, ModelInferResponse, ModelMetadataRequest,
+    ModelMetadataResponse, ModelReadyRequest, ModelReadyResponse, ServerLiveRequest,
+    ServerLiveResponse, ServerMetadataRequest, ServerMetadataResponse, ServerReadyRequest,
+    ServerReadyResponse,
+    model_infer_response::InferOutputTensor,
+    model_metadata_response::TensorMetadata,
     prediction_service_server::{PredictionService, PredictionServiceServer},
 };
 
@@ -120,38 +122,60 @@ impl PredictionService for PredictionServiceImpl {
             model_version: "v1.0.0".to_string(),
             id: "123".to_string(),
             parameters: HashMap::from([
-                ("param1".to_string(), grpc_server::InferParameter {
-                    parameter_choice: Some(grpc_server::infer_parameter::ParameterChoice::StringParam("value1".to_string())),
-                }),
-                ("param2".to_string(), grpc_server::InferParameter {
-                    parameter_choice: Some(grpc_server::infer_parameter::ParameterChoice::Int64Param(42)),
-                }),
+                (
+                    "param1".to_string(),
+                    grpc_server::InferParameter {
+                        parameter_choice: Some(
+                            grpc_server::infer_parameter::ParameterChoice::StringParam(
+                                "value1".to_string(),
+                            ),
+                        ),
+                    },
+                ),
+                (
+                    "param2".to_string(),
+                    grpc_server::InferParameter {
+                        parameter_choice: Some(
+                            grpc_server::infer_parameter::ParameterChoice::Int64Param(42),
+                        ),
+                    },
+                ),
             ]),
-            outputs: vec![
-                InferOutputTensor {
-                    name: "infer_tensor_output2".to_string(),
-                    datatype: "int64".to_string(),
-                    shape: vec![1],
-                    parameters: HashMap::from([
-                        ("param1".to_string(), grpc_server::InferParameter {
-                            parameter_choice: Some(grpc_server::infer_parameter::ParameterChoice::StringParam("value1".to_string())),
-                        }),
-                        ("param2".to_string(), grpc_server::InferParameter {
-                            parameter_choice: Some(grpc_server::infer_parameter::ParameterChoice::Int64Param(42)),
-                        }),
-                    ]),
-                    contents: Some(InferTensorContents {
-                        bool_contents: vec![true, false],
-                        int_contents: vec![2],
-                        int64_contents: vec![42],
-                        uint_contents: vec![10],
-                        uint64_contents: vec![100],
-                        fp32_contents: vec![1.0],
-                        fp64_contents: vec![100.0],
-                        bytes_contents: vec![vec![7, 8, 9]],
-                    }),
-                },
-            ],
+            outputs: vec![InferOutputTensor {
+                name: "infer_tensor_output2".to_string(),
+                datatype: "int64".to_string(),
+                shape: vec![1],
+                parameters: HashMap::from([
+                    (
+                        "param1".to_string(),
+                        grpc_server::InferParameter {
+                            parameter_choice: Some(
+                                grpc_server::infer_parameter::ParameterChoice::StringParam(
+                                    "value1".to_string(),
+                                ),
+                            ),
+                        },
+                    ),
+                    (
+                        "param2".to_string(),
+                        grpc_server::InferParameter {
+                            parameter_choice: Some(
+                                grpc_server::infer_parameter::ParameterChoice::Int64Param(24),
+                            ),
+                        },
+                    ),
+                ]),
+                contents: Some(InferTensorContents {
+                    bool_contents: vec![true, false],
+                    int_contents: vec![2],
+                    int64_contents: vec![42],
+                    uint_contents: vec![10],
+                    uint64_contents: vec![100],
+                    fp32_contents: vec![1.0],
+                    fp64_contents: vec![100.0],
+                    bytes_contents: vec![vec![7, 8, 9]],
+                }),
+            }],
             raw_output_contents: vec![],
         };
 
