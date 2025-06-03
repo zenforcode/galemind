@@ -1,10 +1,11 @@
+use async_trait::async_trait;
+use foundation::{InferenceServerBuilder, InferenceServerConfig};
 use std::collections::HashMap;
-
 use tonic::{Request, Response, Status, transport::Server};
 
 // Include the generated protobuf code
 pub mod grpc_server {
-    tonic::include_proto!("grpc_server"); // This macro includes the generated code.
+    tonic::include_proto!("grpc_server");
 }
 
 use grpc_server::{
@@ -188,26 +189,17 @@ pub struct GrpcServerBuilder {
     address: String,
     service_impl: PredictionServiceImpl,
 }
-
-impl GrpcServerBuilder {
-    pub fn new() -> Self {
+/// async trait should applied also to the implementation.
+#[async_trait]
+impl InferenceServerBuilder for GrpcServerBuilder {
+    fn configure(context: InferenceServerConfig) -> Self {
+        let addr = format!("{}:{}", context.grpc_hostname, context.grpc_port);
         Self {
-            address: "[::1]:50051".to_string(),
+            address: addr,
             service_impl: PredictionServiceImpl::default(),
         }
     }
-
-    pub fn with_address(mut self, address: &str) -> Self {
-        self.address = address.to_string();
-        self
-    }
-
-    pub fn with_service(mut self, service: PredictionServiceImpl) -> Self {
-        self.service_impl = service;
-        self
-    }
-
-    pub async fn build(self) -> Result<(), Box<dyn std::error::Error>> {
+    async fn start(self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let addr = self.address.parse()?;
 
         println!("gRPC PredictionService server listening on {}", addr);
@@ -216,7 +208,6 @@ impl GrpcServerBuilder {
             .add_service(PredictionServiceServer::new(self.service_impl))
             .serve(addr)
             .await?;
-
         Ok(())
     }
 }
