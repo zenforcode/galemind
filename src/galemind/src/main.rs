@@ -16,7 +16,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 .arg(
                     Arg::new("rest-host")
                         .long("rest-host")
-                        .default_value("127.0.0.1")
+                        .default_value("0.0.0.0")
                         .help("REST server host"),
                 )
                 .arg(
@@ -28,7 +28,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 .arg(
                     Arg::new("grpc-host")
                         .long("grpc-host")
-                        .default_value("127.0.0.1")
+                        .default_value("0.0.0.0")
                         .help("gRPC server host"),
                 )
                 .arg(
