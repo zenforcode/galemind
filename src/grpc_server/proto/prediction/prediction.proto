@@ -23,6 +23,8 @@ service PredictionService
   rpc ServerMetadata(ServerMetadataRequest) returns (ServerMetadataResponse) {}
   rpc ModelMetadata(ModelMetadataRequest) returns (ModelMetadataResponse) {}
   rpc ModelInfer(ModelInferRequest) returns (ModelInferResponse) {}
+  // galemind specific
+  rpc ModelInfer(stream ModelInferRequest) returns (stream ModelInferResponse) {}
 }
 
 message ServerLiveRequest {}
@@ -39,7 +41,16 @@ message ServerReadyResponse
   bool ready = 1;
 }
 
-message ModelReadyRequest {}
+
+message ModelReadyRequest
+{
+  // The name of the model to check for readiness.
+  string name = 1;
+
+  // The version of the model to check for readiness. If not given the
+  // server will choose a version based on the model and internal policy.
+  string version = 2;
+}
 
 message ModelReadyResponse
 {
