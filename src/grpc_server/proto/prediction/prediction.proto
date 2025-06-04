@@ -24,7 +24,7 @@ service PredictionService
   rpc ModelMetadata(ModelMetadataRequest) returns (ModelMetadataResponse) {}
   rpc ModelInfer(ModelInferRequest) returns (ModelInferResponse) {}
   // galemind specific
-  rpc ModelInfer(stream ModelInferRequest) returns (stream ModelInferResponse) {}
+  rpc ModelInferAsync(stream ModelInferRequest) returns (stream ModelInferResponse) {}
 }
 
 message ServerLiveRequest {}

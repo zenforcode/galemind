@@ -1,6 +1,10 @@
 use async_trait::async_trait;
 use foundation::{InferenceServerBuilder, InferenceServerConfig};
+use futures::Stream;
 use std::collections::HashMap;
+use std::pin::Pin;
+use tokio::sync::mpsc;
+use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status, transport::Server};
 
 // Include the generated protobuf code
@@ -23,6 +27,9 @@ pub struct PredictionServiceImpl;
 
 #[tonic::async_trait]
 impl PredictionService for PredictionServiceImpl {
+    type ModelInferAsyncStream =
+        Pin<Box<dyn Stream<Item = Result<ModelInferResponse, Status>> + Send>>;
+
     async fn server_live(
         &self,
         request: Request<ServerLiveRequest>,
@@ -110,6 +117,96 @@ impl PredictionService for PredictionServiceImpl {
         Ok(Response::new(reply))
     }
 
+    async fn model_infer_async(
+        &self,
+        request: Request<tonic::Streaming<ModelInferRequest>>,
+    ) -> Result<Response<Self::ModelInferAsyncStream>, Status> {
+        let mut stream = request.into_inner();
+        let (tx, rx) = mpsc::channel(4);
+
+        tokio::spawn(async move {
+            while let Some(message) = stream.message().await.transpose() {
+                match message {
+                    Ok(_req) => {
+                        let response = ModelInferResponse {
+                            model_name: "inference_model".to_string(),
+                            model_version: "v1.0.0".to_string(),
+                            id: "123".to_string(),
+                            parameters: HashMap::from([
+                                (
+                                    "param1".to_string(),
+                                    grpc_server::InferParameter {
+                                        parameter_choice: Some(
+                                            grpc_server::infer_parameter::ParameterChoice::StringParam(
+                                                "value1".to_string()
+                                            ),
+                                        ),
+                                    },
+                                ),
+                                (
+                                    "param2".to_string(),
+                                    grpc_server::InferParameter {
+                                        parameter_choice: Some(
+                                            grpc_server::infer_parameter::ParameterChoice::Int64Param(42),
+                                        ),
+                                    },
+                                ),
+                            ]),
+                            outputs: vec![InferOutputTensor {
+                                name: "infer_tensor_output2".to_string(),
+                                datatype: "int64".to_string(),
+                                shape: vec![1],
+                                parameters: HashMap::from([
+                                    (
+                                        "param1".to_string(),
+                                        grpc_server::InferParameter {
+                                            parameter_choice: Some(
+                                                grpc_server::infer_parameter::ParameterChoice::StringParam(
+                                                    "value1".to_string(),
+                                                ),
+                                            ),
+                                        },
+                                    ),
+                                    (
+                                        "param2".to_string(),
+                                        grpc_server::InferParameter {
+                                            parameter_choice: Some(
+                                                grpc_server::infer_parameter::ParameterChoice::Int64Param(24),
+                                            ),
+                                        },
+                                    ),
+                                ]),
+                                contents: Some(InferTensorContents {
+                                    bool_contents: vec![true, false],
+                                    int_contents: vec![2],
+                                    int64_contents: vec![42],
+                                    uint_contents: vec![10],
+                                    uint64_contents: vec![100],
+                                    fp32_contents: vec![1.0],
+                                    fp64_contents: vec![100.0],
+                                    bytes_contents: vec![vec![7, 8, 9]],
+                                }),
+                            }],
+                            raw_output_contents: vec![],
+                        };
+
+                        if let Err(e) = tx.send(Ok(response)).await {
+                            eprintln!("Error sending response: {:?}", e);
+                            break;
+                        }
+                    }
+                    Err(e) => {
+                        eprintln!("Error reading stream: {:?}", e);
+                        break;
+                    }
+                }
+            }
+        });
+
+        Ok(Response::new(
+            Box::pin(ReceiverStream::new(rx)) as Self::ModelInferAsyncStream
+        ))
+    }
     async fn model_infer(
         &self,
         request: Request<ModelInferRequest>,
