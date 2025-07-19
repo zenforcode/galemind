@@ -1,0 +1,407 @@
+syntax = "proto3";
+
+package ml_service;
+
+// ML Inference Service for adaptive batching demonstration
+service MLInferenceService {
+  // Single inference request
+  rpc Predict(PredictRequest) returns (PredictResponse);
+  
+  // Streaming inference for real-time scenarios
+  rpc PredictStream(stream PredictRequest) returns (stream PredictResponse);
+  
+  // Batch inference endpoint
+  rpc BatchPredict(BatchPredictRequest) returns (BatchPredictResponse);
+  
+  // Health check endpoint
+  rpc Health(HealthRequest) returns (HealthResponse);
+  
+  // Get server metrics and performance statistics
+  rpc GetMetrics(MetricsRequest) returns (MetricsResponse);
+}
+
+// Individual prediction request
+message PredictRequest {
+  // Request ID for tracking
+  string request_id = 1;
+  
+  // Input data for inference
+  oneof input {
+    ImageInput image = 2;
+    TextInput text = 3;
+    NumericInput numeric = 4;
+  }
+  
+  // Model configuration
+  ModelConfig model_config = 5;
+  
+  // Request metadata
+  map<string, string> metadata = 6;
+}
+
+// Image input for computer vision models
+message ImageInput {
+  // Image data as bytes (JPEG, PNG, etc.)
+  bytes data = 1;
+  
+  // Image dimensions
+  uint32 width = 2;
+  uint32 height = 3;
+  uint32 channels = 4;
+  
+  // Image format (jpeg, png, raw, etc.)
+  string format = 5;
+  
+  // Preprocessing parameters
+  ImagePreprocessing preprocessing = 6;
+}
+
+// Text input for NLP models
+message TextInput {
+  // Input text
+  string text = 1;
+  
+  // Language code (optional)
+  string language = 2;
+  
+  // Maximum sequence length
+  uint32 max_length = 3;
+  
+  // Tokenization parameters
+  TextPreprocessing preprocessing = 4;
+}
+
+// Numeric input for tabular models
+message NumericInput {
+  // Feature values
+  repeated double features = 1;
+  
+  // Feature names (optional)
+  repeated string feature_names = 2;
+  
+  // Normalization parameters
+  NumericPreprocessing preprocessing = 3;
+}
+
+// Image preprocessing configuration
+message ImagePreprocessing {
+  // Target dimensions for resizing
+  uint32 target_width = 1;
+  uint32 target_height = 2;
+  
+  // Normalization parameters
+  repeated double mean = 3;  // Per-channel means
+  repeated double std = 4;   // Per-channel standard deviations
+  
+  // Whether to center crop
+  bool center_crop = 5;
+}
+
+// Text preprocessing configuration
+message TextPreprocessing {
+  // Whether to convert to lowercase
+  bool lowercase = 1;
+  
+  // Whether to remove special characters
+  bool remove_special_chars = 2;
+  
+  // Tokenization strategy
+  string tokenizer = 3;
+}
+
+// Numeric preprocessing configuration
+message NumericPreprocessing {
+  // Normalization strategy (none, zscore, minmax)
+  string normalization = 1;
+  
+  // Whether to handle missing values
+  bool handle_missing = 2;
+}
+
+// Model configuration
+message ModelConfig {
+  // Model name/version
+  string model_name = 1;
+  string model_version = 2;
+  
+  // Inference parameters
+  uint32 batch_size_hint = 3;  // Hint for optimal batch size
+  uint32 max_latency_ms = 4;   // Maximum acceptable latency
+  
+  // Model-specific parameters
+  map<string, string> parameters = 5;
+}
+
+// Individual prediction response
+message PredictResponse {
+  // Request ID from the original request
+  string request_id = 1;
+  
+  // Prediction results
+  oneof output {
+    ClassificationOutput classification = 2;
+    RegressionOutput regression = 3;
+    GenerationOutput generation = 4;
+    EmbeddingOutput embedding = 5;
+  }
+  
+  // Prediction metadata
+  PredictionMetadata metadata = 6;
+  
+  // Error information if prediction failed
+  optional ErrorInfo error = 7;
+}
+
+// Classification model output
+message ClassificationOutput {
+  // Predicted class labels
+  repeated string labels = 1;
+  
+  // Prediction probabilities/scores
+  repeated double probabilities = 2;
+  
+  // Top-k predictions
+  uint32 top_k = 3;
+}
+
+// Regression model output
+message RegressionOutput {
+  // Predicted values
+  repeated double values = 1;
+  
+  // Confidence intervals (optional)
+  repeated ConfidenceInterval confidence_intervals = 2;
+}
+
+// Text generation output
+message GenerationOutput {
+  // Generated text
+  string text = 1;
+  
+  // Generation metadata
+  uint32 tokens_generated = 2;
+  double generation_time_ms = 3;
+  
+  // Alternative generations (beam search results)
+  repeated string alternatives = 4;
+}
+
+// Embedding output
+message EmbeddingOutput {
+  // Embedding vectors
+  repeated double embeddings = 1;
+  
+  // Embedding dimensions
+  uint32 dimensions = 2;
+}
+
+// Confidence interval for regression
+message ConfidenceInterval {
+  double lower_bound = 1;
+  double upper_bound = 2;
+  double confidence_level = 3;  // e.g., 0.95 for 95% confidence
+}
+
+// Prediction metadata
+message PredictionMetadata {
+  // Processing time breakdown
+  double preprocessing_time_ms = 1;
+  double inference_time_ms = 2;
+  double postprocessing_time_ms = 3;
+  double total_time_ms = 4;
+  
+  // Batch information
+  uint32 batch_size = 5;
+  uint32 batch_position = 6;  // Position within the batch
+  
+  // Model information
+  string model_version_used = 7;
+  
+  // Resource usage
+  double memory_usage_mb = 8;
+  double cpu_usage_percent = 9;
+}
+
+// Error information
+message ErrorInfo {
+  // Error code
+  string code = 1;
+  
+  // Error message
+  string message = 2;
+  
+  // Error details
+  map<string, string> details = 3;
+}
+
+// Batch prediction request
+message BatchPredictRequest {
+  // Multiple prediction requests
+  repeated PredictRequest requests = 1;
+  
+  // Batch-level configuration
+  BatchConfig batch_config = 2;
+}
+
+// Batch configuration
+message BatchConfig {
+  // Maximum batch size
+  uint32 max_batch_size = 1;
+  
+  // Maximum wait time for batch formation
+  uint32 max_wait_time_ms = 2;
+  
+  // Whether to return partial results on timeout
+  bool allow_partial_results = 3;
+}
+
+// Batch prediction response
+message BatchPredictResponse {
+  // Batch of prediction responses
+  repeated PredictResponse responses = 1;
+  
+  // Batch-level metadata
+  BatchMetadata batch_metadata = 2;
+}
+
+// Batch processing metadata
+message BatchMetadata {
+  // Actual batch size processed
+  uint32 actual_batch_size = 1;
+  
+  // Total processing time
+  double total_processing_time_ms = 2;
+  
+  // Batch formation time
+  double batch_formation_time_ms = 3;
+  
+  // Adaptive batching parameters used
+  AdaptiveBatchingParams batching_params = 4;
+}
+
+// Adaptive batching parameters
+message AdaptiveBatchingParams {
+  // CORK algorithm parameters
+  double o_a = 1;  // Time per item
+  double o_b = 2;  // Base processing time
+  double wait_time_ms = 3;  // Optimal wait time
+  
+  // Training statistics
+  uint32 parameter_updates = 4;
+  uint32 training_samples = 5;
+}
+
+// Health check request
+message HealthRequest {
+  // Optional service name to check
+  string service = 1;
+}
+
+// Health check response
+message HealthResponse {
+  // Health status
+  enum Status {
+    UNKNOWN = 0;
+    SERVING = 1;
+    NOT_SERVING = 2;
+    SERVICE_UNKNOWN = 3;
+  }
+  
+  Status status = 1;
+  
+  // Additional health information
+  map<string, string> details = 2;
+}
+
+// Metrics request
+message MetricsRequest {
+  // Time range for metrics (optional)
+  optional TimeRange time_range = 1;
+  
+  // Specific metrics to retrieve
+  repeated string metric_names = 2;
+}
+
+// Time range specification
+message TimeRange {
+  // Start time (Unix timestamp)
+  int64 start_time = 1;
+  
+  // End time (Unix timestamp)
+  int64 end_time = 2;
+}
+
+// Metrics response
+message MetricsResponse {
+  // Server performance metrics
+  ServerMetrics server_metrics = 1;
+  
+  // Adaptive batching metrics
+  AdaptiveBatchingMetrics batching_metrics = 2;
+  
+  // Model performance metrics
+  repeated ModelMetrics model_metrics = 3;
+}
+
+// Server-level metrics
+message ServerMetrics {
+  // Request rate metrics
+  double requests_per_second = 1;
+  double avg_latency_ms = 2;
+  double p95_latency_ms = 3;
+  double p99_latency_ms = 4;
+  
+  // Resource utilization
+  double cpu_usage_percent = 5;
+  double memory_usage_mb = 6;
+  double memory_usage_percent = 7;
+  
+  // Error rates
+  double error_rate = 8;
+  uint64 total_requests = 9;
+  uint64 total_errors = 10;
+  
+  // Uptime
+  double uptime_seconds = 11;
+}
+
+// Adaptive batching specific metrics
+message AdaptiveBatchingMetrics {
+  // Batch size statistics
+  double avg_batch_size = 1;
+  double min_batch_size = 2;
+  double max_batch_size = 3;
+  
+  // Timing statistics
+  double avg_wait_time_ms = 4;
+  double avg_processing_time_ms = 5;
+  
+  // Optimization metrics
+  uint32 parameter_updates = 6;
+  double optimization_error = 7;
+  
+  // Current CORK parameters
+  AdaptiveBatchingParams current_params = 8;
+  
+  // Batch size histogram
+  map<uint32, uint64> batch_size_histogram = 9;
+}
+
+// Per-model metrics
+message ModelMetrics {
+  // Model identifier
+  string model_name = 1;
+  string model_version = 2;
+  
+  // Performance metrics
+  double avg_inference_time_ms = 3;
+  double throughput_rps = 4;
+  
+  // Accuracy metrics (if available)
+  optional double accuracy = 5;
+  optional double f1_score = 6;
+  
+  // Resource usage
+  double memory_usage_mb = 7;
+  double gpu_usage_percent = 8;
+}

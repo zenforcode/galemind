@@ -1,0 +1,53 @@
+[package]
+name = "neural-network-demo"
+version = "0.1.0"
+edition = "2021"
+authors = ["Giorgio Zoppi <giorgio.zoppi@example.com>"]
+description = "Deep neural network demo showcasing adaptive batching"
+
+[[bin]]
+name = "neural-network"
+path = "src/main.rs"
+
+[dependencies]
+# Core adaptive batching library
+adaptive-batching = { path = "../.." }
+
+# Async runtime and utilities
+tokio = { version = "1.46", features = ["full"] }
+futures = "0.3"
+
+# Neural network and ML libraries
+candle-core = "0.6"
+candle-nn = "0.6"
+candle-datasets = "0.6"
+rand = "0.8"
+
+# Image processing
+image = "0.24"
+
+# Serialization and data handling
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Logging and tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# CLI argument parsing
+clap = { version = "4.0", features = ["derive"] }
+
+# Metrics and monitoring
+prometheus = "0.13"
+
+# Utilities
+anyhow = "1.0"
+thiserror = "1.0"
+
+[dev-dependencies]
+criterion = { version = "0.4", features = ["html_reports"] }
+tempfile = "3.0"
+
+[[bench]]
+name = "neural_network_bench"
+harness = false

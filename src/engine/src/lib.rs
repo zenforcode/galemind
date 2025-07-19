@@ -19,3 +19,4 @@ pub trait InferenceServerBuilder: Sized + Send + Sync {
     fn configure(context: InferenceServerConfig) -> Self;
     async fn start(self) -> Result<(), Box<dyn std::error::Error + Send + Sync>>;
 }
+
