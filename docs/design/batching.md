@@ -3,7 +3,7 @@
 ```mermaid
 flowchart TD
     A[Client Sends Inference Requests] --> B[HTTP/gRPC API Layer]
-    B --> C[Request Queue]
+    B --> C[Model Manager]
 
     subgraph "Dynamic Batching Scheduler"
         C --> D{Batch Window Open?}
@@ -19,4 +19,4 @@ flowchart TD
     G --> I[Model Execution on GPU/CPU]
     I --> J[Return Batched Results]
     J --> K[Client Receives Response]
-    ``
+```
