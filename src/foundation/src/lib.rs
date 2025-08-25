@@ -1,4 +1,5 @@
 pub mod api;
+pub mod model;
 
 pub use api::fake::FakeInferenceProcessor;
 pub use api::inference::{InferenceRequest, InferenceResponse};
