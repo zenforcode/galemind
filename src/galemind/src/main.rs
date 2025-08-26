@@ -1,8 +1,8 @@
 use clap::{Arg, Command};
-use foundation::{InferenceServerBuilder, InferenceServerConfig};
+use foundation::{model::model_manager::{self, ModelManager}, InferenceServerBuilder, InferenceServerConfig};
 use grpc_server::GrpcServerBuilder;
 use rest_server::RestServerBuilder;
-use std::error::Error;
+use std::{env, error::Error, sync::Arc};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -64,10 +64,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
             };
             let grpc_context = context.clone();
 
-            let rest_server = RestServerBuilder::configure(context);
-            let grpc_server = GrpcServerBuilder::configure(grpc_context);
-            let rest_handler = tokio::spawn(async move { rest_server.start().await });
+            // Instantiate Model Manager with CircularBuffer capacity of 32 for each model ID
+            // TODO: Calculate optimal value or pass dynamically models_buffer_capacity !
+            let model_manager = Arc::new(ModelManager::new(32));
+            model_manager.load_models_from_dir(env::var("MODELS_DIR").expect("MODELS_DIR environment variable must be set!"))?;
 
+            // Load contexts for REST and gRPC servers
+            let rest_server = RestServerBuilder::configure(context, model_manager.clone());
+            let grpc_server = GrpcServerBuilder::configure(grpc_context, model_manager.clone());
+
+            // Start REST and gRPC servers
+            let rest_handler = tokio::spawn(async move { rest_server.start().await });
             let grpc_handler = tokio::spawn(async move { grpc_server.start().await });
 
             let (rest_result, grpc_result) = tokio::join!(rest_handler, grpc_handler);
@@ -85,6 +92,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 Ok(Err(e)) => eprintln!("gRPC server error: {}", e),
                 Err(e) => eprintln!("gRPC task panicked: {}", e),
             }
+
         }
         _ => {
             println!("Use --help for usage.");

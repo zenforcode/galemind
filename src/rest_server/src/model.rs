@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
 use axum::{
     Router,
@@ -6,6 +6,7 @@ use axum::{
     response::IntoResponse,
     routing::{get, post},
 };
+use foundation::model::model_manager::ModelManager;
 
 //  TODO: later change this to galemind::api
 use crate::data_model::{
@@ -58,7 +59,7 @@ async fn model_version_handler(
     }))
 }
 
-pub fn new_model_router() -> Router {
+pub fn new_model_router(model_manager: Arc<ModelManager>) -> Router {
     Router::new()
         .route("/{model_name}/ready", get(model_ready_handler))
         .route("/{model_name}/infer", post(model_infer_handler))
@@ -74,4 +75,5 @@ pub fn new_model_router() -> Router {
             "/{model_name}/versions/{model_version}/infer",
             post(model_infer_handler),
         )
+        .with_state(model_manager)
 }

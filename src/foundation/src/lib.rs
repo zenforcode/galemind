@@ -1,11 +1,15 @@
 pub mod api;
 pub mod model;
 
+use std::sync::Arc;
+
 pub use api::fake::FakeInferenceProcessor;
 pub use api::inference::{InferenceRequest, InferenceResponse};
 
 use anyhow::Result;
 use async_trait::async_trait;
+
+use crate::model::model_manager::ModelManager;
 
 #[derive(Debug, Clone)]
 pub struct InferenceServerConfig {
@@ -17,6 +21,6 @@ pub struct InferenceServerConfig {
 
 #[async_trait]
 pub trait InferenceServerBuilder: Sized + Send + Sync {
-    fn configure(context: InferenceServerConfig) -> Self;
+    fn configure(context: InferenceServerConfig, model_manager: Arc<ModelManager>) -> Self;
     async fn start(self) -> Result<(), Box<dyn std::error::Error + Send + Sync>>;
 }
