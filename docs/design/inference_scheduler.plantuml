@@ -1,0 +1,26 @@
+@startuml
+actor "Request Source" as Client
+participant "Model Queues" as Queues
+participant "Scheduler" as Scheduler
+participant "Worker Manager" as Manager
+
+Client -> Queues: Submit Request(model_id)
+Scheduler -> Queues: Check queue length for model_i
+Queues --> Scheduler: queue_length_i
+
+    alt queue_length_i > HIGH_THRESHOLD
+        Scheduler -> Manager: Scale Up Workers for model_i
+        Manager --> Scheduler: Workers added for model_i
+    else queue_length_i < LOW_THRESHOLD
+        Scheduler -> Scheduler: Check cooldown for model_i
+        alt Cooldown passed
+            Scheduler -> Manager: Scale Down Workers for model_i
+            Manager --> Scheduler: Workers removed for model_i
+        else
+            Scheduler -> Scheduler: Skip scale down for model_i (cooldown)
+        end
+    else
+        Scheduler -> Scheduler: Maintain worker count for model_i
+    end
+end
+@enduml

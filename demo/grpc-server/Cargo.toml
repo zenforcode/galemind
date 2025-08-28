@@ -1,0 +1,73 @@
+[package]
+name = "grpc-server-demo"
+version = "0.1.0"
+edition = "2021"
+authors = ["Giorgio Zoppi <giorgio.zoppi@example.com>"]
+description = "gRPC server demo showcasing adaptive batching for ML inference"
+
+[[bin]]
+name = "server"
+path = "src/main.rs"
+
+[[bin]]
+name = "client"
+path = "src/client.rs"
+
+[dependencies]
+# Core adaptive batching library
+adaptive-batching = { path = "../.." }
+
+# gRPC and Protocol Buffers
+tonic = "0.12"
+prost = "0.13"
+tokio = { version = "1.46", features = ["full"] }
+tokio-stream = "0.1"
+
+# HTTP server for health checks and metrics
+axum = "0.7"
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+
+# Serialization and data handling
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Logging and tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+tracing-opentelemetry = "0.23"
+
+# Metrics and monitoring
+prometheus = "0.13"
+metrics = "0.23"
+metrics-prometheus = "0.7"
+
+# Async utilities
+futures = "0.3"
+futures-util = "0.3"
+
+# Configuration and CLI
+clap = { version = "4.0", features = ["derive"] }
+config = "0.14"
+
+# Utilities and error handling
+anyhow = "1.0"
+thiserror = "1.0"
+uuid = { version = "1.0", features = ["v4"] }
+
+# Time and duration utilities
+chrono = { version = "0.4", features = ["serde"] }
+
+# Neural network demo integration
+neural-network-demo = { path = "../neural-network" }
+
+[build-dependencies]
+tonic-build = "0.12"
+
+[dev-dependencies]
+criterion = { version = "0.4", features = ["html_reports"] }
+tempfile = "3.0"
+
+[[bench]]
+name = "grpc_server_bench"
+harness = false
