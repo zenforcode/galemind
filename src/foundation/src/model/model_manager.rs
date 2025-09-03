@@ -3,15 +3,16 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 
-use crate::model::circular_buffer::CircularBuffer;
 use crate::api::inference::InferenceRequest;
+use crate::model::circular_buffer::CircularBuffer;
 
 #[derive(Debug, Clone, Eq, Hash, PartialEq)]
 pub struct ModelId(pub String);
 
 impl ModelId {
     pub fn from_path(models_path: PathBuf) -> Option<Self> {
-        models_path.file_name()
+        models_path
+            .file_name()
             .and_then(|os_model_str| os_model_str.to_str())
             .map(|model| ModelId(model.to_string()))
     }
@@ -37,9 +38,9 @@ impl ModelManager {
             let model_entry = model_entry?;
             if model_entry.file_type()?.is_dir() {
                 if let Some(model_id) = ModelId::from_path(model_entry.path()) {
-                    self.models
-                        .entry(model_id)
-                        .or_insert_with(|| Mutex::new(CircularBuffer::new(self.models_buffer_capacity)));
+                    self.models.entry(model_id).or_insert_with(|| {
+                        Mutex::new(CircularBuffer::new(self.models_buffer_capacity))
+                    });
                 }
             }
         }

@@ -1,5 +1,7 @@
 use clap::{Arg, Command};
-use foundation::{model::model_manager::{ModelManager}, InferenceServerBuilder, InferenceServerConfig};
+use foundation::{
+    InferenceServerBuilder, InferenceServerConfig, model::model_manager::ModelManager,
+};
 use grpc_server::GrpcServerBuilder;
 use rest_server::RestServerBuilder;
 use std::{env, error::Error, sync::Arc};
@@ -67,7 +69,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
             // Instantiate Model Manager with CircularBuffer capacity of 32 for each model ID
             // TODO: Calculate optimal value or pass dynamically models_buffer_capacity !
             let model_manager = Arc::new(ModelManager::new(32));
-            model_manager.load_models_from_dir(env::var("MODELS_DIR").expect("MODELS_DIR environment variable must be set!"))?;
+            model_manager.load_models_from_dir(
+                env::var("MODELS_DIR").expect("MODELS_DIR environment variable must be set!"),
+            )?;
 
             // Load contexts for REST and gRPC servers
             let rest_server = RestServerBuilder::configure(context, model_manager.clone());
@@ -92,7 +96,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 Ok(Err(e)) => eprintln!("gRPC server error: {}", e),
                 Err(e) => eprintln!("gRPC task panicked: {}", e),
             }
-
         }
         _ => {
             println!("Use --help for usage.");

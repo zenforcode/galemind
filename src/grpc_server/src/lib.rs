@@ -6,8 +6,8 @@ use foundation::model::model_manager::{ModelId, ModelManager};
 use foundation::{InferenceRequest, InferenceServerBuilder, InferenceServerConfig};
 use futures::Stream;
 use std::collections::HashMap;
-use std::{sync::Arc};
 use std::pin::Pin;
+use std::sync::Arc;
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status, transport::Server};
@@ -18,10 +18,9 @@ pub mod grpc_server {
 }
 
 use grpc_server::{
-    ModelInferRequest, ModelInferResponse, ModelMetadataRequest,
-    ModelMetadataResponse, ModelReadyRequest, ModelReadyResponse, ServerLiveRequest,
-    ServerLiveResponse, ServerMetadataRequest, ServerMetadataResponse, ServerReadyRequest,
-    ServerReadyResponse,
+    ModelInferRequest, ModelInferResponse, ModelMetadataRequest, ModelMetadataResponse,
+    ModelReadyRequest, ModelReadyResponse, ServerLiveRequest, ServerLiveResponse,
+    ServerMetadataRequest, ServerMetadataResponse, ServerReadyRequest, ServerReadyResponse,
     model_metadata_response::TensorMetadata,
     prediction_service_server::{PredictionService, PredictionServiceServer},
 };
@@ -143,7 +142,8 @@ impl PredictionService for PredictionServiceImpl {
                     Ok(req) => {
                         let model_id = ModelId(req.id.clone());
 
-                        let parameters = req.parameters
+                        let parameters = req
+                            .parameters
                             .into_iter()
                             .map(|(k, v)| (k, InferParameter::from(v)))
                             .collect::<HashMap<_, _>>();
@@ -194,7 +194,8 @@ impl PredictionService for PredictionServiceImpl {
         let req = request.into_inner();
         let model_id = ModelId(req.id.clone());
 
-        let domain_params = req.parameters
+        let domain_params = req
+            .parameters
             .into_iter()
             .map(|(k, v)| (k, InferParameter::from(v)))
             .collect::<HashMap<_, _>>();
@@ -209,14 +210,13 @@ impl PredictionService for PredictionServiceImpl {
 
         // Enqueue into ModelManager
         self.model_manager.add_request(model_id, inference_request);
-        
 
         let reply = ModelInferResponse {
             model_name: req.model_name,
             model_version: req.model_version,
             id: req.id,
             parameters: HashMap::new(),
-            outputs: vec![], 
+            outputs: vec![],
             raw_output_contents: vec![],
         };
 

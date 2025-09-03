@@ -1,5 +1,5 @@
-use foundation::api::inference::InferParameter;
-use crate::grpc_server; // the generated proto module
+use crate::grpc_server;
+use foundation::api::inference::InferParameter; // the generated proto module
 
 impl From<grpc_server::InferParameter> for InferParameter {
     fn from(p: grpc_server::InferParameter) -> Self {
