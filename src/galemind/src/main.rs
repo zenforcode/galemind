@@ -1,5 +1,5 @@
 use clap::{Arg, Command};
-use foundation::{model::model_manager::{self, ModelManager}, InferenceServerBuilder, InferenceServerConfig};
+use foundation::{model::model_manager::{ModelManager}, InferenceServerBuilder, InferenceServerConfig};
 use grpc_server::GrpcServerBuilder;
 use rest_server::RestServerBuilder;
 use std::{env, error::Error, sync::Arc};

@@ -1,3 +1,4 @@
+#[derive(Debug, Default)]
 pub struct CircularBuffer<T> {
     buffer: Vec<T>,
     capacity: usize,

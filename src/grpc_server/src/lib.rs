@@ -1,7 +1,12 @@
+mod translator;
+
 use async_trait::async_trait;
-use foundation::{InferenceServerBuilder, InferenceServerConfig};
+use foundation::api::inference::InferParameter;
+use foundation::model::model_manager::{ModelId, ModelManager};
+use foundation::{InferenceRequest, InferenceServerBuilder, InferenceServerConfig};
 use futures::Stream;
 use std::collections::HashMap;
+use std::{sync::Arc};
 use std::pin::Pin;
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::ReceiverStream;
@@ -13,17 +18,23 @@ pub mod grpc_server {
 }
 
 use grpc_server::{
-    InferTensorContents, ModelInferRequest, ModelInferResponse, ModelMetadataRequest,
+    ModelInferRequest, ModelInferResponse, ModelMetadataRequest,
     ModelMetadataResponse, ModelReadyRequest, ModelReadyResponse, ServerLiveRequest,
     ServerLiveResponse, ServerMetadataRequest, ServerMetadataResponse, ServerReadyRequest,
     ServerReadyResponse,
-    model_infer_response::InferOutputTensor,
     model_metadata_response::TensorMetadata,
     prediction_service_server::{PredictionService, PredictionServiceServer},
 };
 
-#[derive(Debug, Default)]
-pub struct PredictionServiceImpl;
+pub struct PredictionServiceImpl {
+    model_manager: Arc<ModelManager>,
+}
+
+impl PredictionServiceImpl {
+    pub fn new(model_manager: Arc<ModelManager>) -> Self {
+        Self { model_manager }
+    }
+}
 
 #[tonic::async_trait]
 impl PredictionService for PredictionServiceImpl {
@@ -124,72 +135,38 @@ impl PredictionService for PredictionServiceImpl {
         let mut stream = request.into_inner();
         let (tx, rx) = mpsc::channel(4);
 
+        let model_manager = self.model_manager.clone();
+
         tokio::spawn(async move {
             while let Some(message) = stream.message().await.transpose() {
                 match message {
-                    Ok(_req) => {
-                        let response = ModelInferResponse {
-                            model_name: "inference_model".to_string(),
-                            model_version: "v1.0.0".to_string(),
-                            id: "123".to_string(),
-                            parameters: HashMap::from([
-                                (
-                                    "param1".to_string(),
-                                    grpc_server::InferParameter {
-                                        parameter_choice: Some(
-                                            grpc_server::infer_parameter::ParameterChoice::StringParam(
-                                                "value1".to_string()
-                                            ),
-                                        ),
-                                    },
-                                ),
-                                (
-                                    "param2".to_string(),
-                                    grpc_server::InferParameter {
-                                        parameter_choice: Some(
-                                            grpc_server::infer_parameter::ParameterChoice::Int64Param(42),
-                                        ),
-                                    },
-                                ),
-                            ]),
-                            outputs: vec![InferOutputTensor {
-                                name: "infer_tensor_output2".to_string(),
-                                datatype: "int64".to_string(),
-                                shape: vec![1],
-                                parameters: HashMap::from([
-                                    (
-                                        "param1".to_string(),
-                                        grpc_server::InferParameter {
-                                            parameter_choice: Some(
-                                                grpc_server::infer_parameter::ParameterChoice::StringParam(
-                                                    "value1".to_string(),
-                                                ),
-                                            ),
-                                        },
-                                    ),
-                                    (
-                                        "param2".to_string(),
-                                        grpc_server::InferParameter {
-                                            parameter_choice: Some(
-                                                grpc_server::infer_parameter::ParameterChoice::Int64Param(24),
-                                            ),
-                                        },
-                                    ),
-                                ]),
-                                contents: Some(InferTensorContents {
-                                    bool_contents: vec![true, false],
-                                    int_contents: vec![2],
-                                    int64_contents: vec![42],
-                                    uint_contents: vec![10],
-                                    uint64_contents: vec![100],
-                                    fp32_contents: vec![1.0],
-                                    fp64_contents: vec![100.0],
-                                    bytes_contents: vec![vec![7, 8, 9]],
-                                }),
-                            }],
-                            raw_output_contents: vec![],
+                    Ok(req) => {
+                        let model_id = ModelId(req.id.clone());
+
+                        let parameters = req.parameters
+                            .into_iter()
+                            .map(|(k, v)| (k, InferParameter::from(v)))
+                            .collect::<HashMap<_, _>>();
+
+                        let inference_request = InferenceRequest {
+                            model_name: req.model_name.clone(),
+                            model_version: Some(req.model_version.clone()),
+                            id: req.id.clone(),
+                            parameters: Some(parameters),
+                            outputs: None,
                         };
 
+                        model_manager.add_request(model_id, inference_request);
+
+                        // ACK/dummy responses if needed
+                        let response = ModelInferResponse {
+                            model_name: req.model_name,
+                            model_version: req.model_version,
+                            id: req.id,
+                            parameters: HashMap::new(),
+                            outputs: vec![],
+                            raw_output_contents: vec![],
+                        };
                         if let Err(e) = tx.send(Ok(response)).await {
                             eprintln!("Error sending response: {:?}", e);
                             break;
@@ -207,73 +184,39 @@ impl PredictionService for PredictionServiceImpl {
             Box::pin(ReceiverStream::new(rx)) as Self::ModelInferAsyncStream
         ))
     }
+
     async fn model_infer(
         &self,
         request: Request<ModelInferRequest>,
     ) -> Result<Response<ModelInferResponse>, Status> {
         println!("Got a request: {:?}", request);
 
-        // Process the inference request and return a response.
-        // For now, we return a dummy response.
+        let req = request.into_inner();
+        let model_id = ModelId(req.id.clone());
+
+        let domain_params = req.parameters
+            .into_iter()
+            .map(|(k, v)| (k, InferParameter::from(v)))
+            .collect::<HashMap<_, _>>();
+
+        let inference_request = InferenceRequest {
+            model_name: req.model_name.clone(),
+            model_version: Some(req.model_version.clone()),
+            id: req.id.clone(),
+            parameters: Some(domain_params),
+            outputs: None, // or map req.outputs if needed
+        };
+
+        // Enqueue into ModelManager
+        self.model_manager.add_request(model_id, inference_request);
+        
+
         let reply = ModelInferResponse {
-            model_name: "inference_model".to_string(),
-            model_version: "v1.0.0".to_string(),
-            id: "123".to_string(),
-            parameters: HashMap::from([
-                (
-                    "param1".to_string(),
-                    grpc_server::InferParameter {
-                        parameter_choice: Some(
-                            grpc_server::infer_parameter::ParameterChoice::StringParam(
-                                "value1".to_string(),
-                            ),
-                        ),
-                    },
-                ),
-                (
-                    "param2".to_string(),
-                    grpc_server::InferParameter {
-                        parameter_choice: Some(
-                            grpc_server::infer_parameter::ParameterChoice::Int64Param(42),
-                        ),
-                    },
-                ),
-            ]),
-            outputs: vec![InferOutputTensor {
-                name: "infer_tensor_output2".to_string(),
-                datatype: "int64".to_string(),
-                shape: vec![1],
-                parameters: HashMap::from([
-                    (
-                        "param1".to_string(),
-                        grpc_server::InferParameter {
-                            parameter_choice: Some(
-                                grpc_server::infer_parameter::ParameterChoice::StringParam(
-                                    "value1".to_string(),
-                                ),
-                            ),
-                        },
-                    ),
-                    (
-                        "param2".to_string(),
-                        grpc_server::InferParameter {
-                            parameter_choice: Some(
-                                grpc_server::infer_parameter::ParameterChoice::Int64Param(24),
-                            ),
-                        },
-                    ),
-                ]),
-                contents: Some(InferTensorContents {
-                    bool_contents: vec![true, false],
-                    int_contents: vec![2],
-                    int64_contents: vec![42],
-                    uint_contents: vec![10],
-                    uint64_contents: vec![100],
-                    fp32_contents: vec![1.0],
-                    fp64_contents: vec![100.0],
-                    bytes_contents: vec![vec![7, 8, 9]],
-                }),
-            }],
+            model_name: req.model_name,
+            model_version: req.model_version,
+            id: req.id,
+            parameters: HashMap::new(),
+            outputs: vec![], 
             raw_output_contents: vec![],
         };
 
@@ -289,11 +232,11 @@ pub struct GrpcServerBuilder {
 /// async trait should applied also to the implementation.
 #[async_trait]
 impl InferenceServerBuilder for GrpcServerBuilder {
-    fn configure(context: InferenceServerConfig) -> Self {
+    fn configure(context: InferenceServerConfig, model_manager: Arc<ModelManager>) -> Self {
         let addr = format!("{}:{}", context.grpc_hostname, context.grpc_port);
         Self {
             address: addr,
-            service_impl: PredictionServiceImpl::default(),
+            service_impl: PredictionServiceImpl::new(model_manager),
         }
     }
     async fn start(self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {

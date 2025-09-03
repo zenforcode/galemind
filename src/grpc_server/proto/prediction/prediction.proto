@@ -220,7 +220,9 @@ message InferParameter
 
     int64 int64_param = 2;
 
-    string string_param = 3;
+    double f64_param = 3;
+
+    string string_param = 4;
   }
 }
 
