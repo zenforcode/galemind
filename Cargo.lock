@@ -385,7 +385,6 @@ dependencies = [
  "anyhow",
  "async-trait",
  "dashmap",
- "serde_json",
 ]
 
 [[package]]
