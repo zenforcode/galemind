@@ -103,4 +103,3 @@ mod tests {
         assert!(model_id.is_none());
     }
 }
-
