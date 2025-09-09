@@ -58,3 +58,78 @@ impl<T> CircularBuffer<T> {
         self.buffer.len() == self.capacity
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_empty_buffer() {
+        let buf: CircularBuffer<i32> = CircularBuffer::new(3);
+        assert_eq!(buf.len(), 0);
+        assert!(buf.is_empty());
+        assert!(!buf.is_full());    
+    }
+
+    #[test]
+    fn test_full_buffer() {
+        let mut buf: CircularBuffer<i32> = CircularBuffer::new(3);
+        buf.push(1);
+        buf.push(2);
+        buf.push(3);
+        assert!(!buf.is_empty());
+        assert!(buf.is_full());
+    }
+
+    #[test]
+    fn test_len_matches_items() {
+        let mut buf = CircularBuffer::new(3);
+        assert_eq!(buf.len(), buf.items().len());
+
+        buf.push(1);
+        buf.push(2);
+        assert_eq!(buf.len(), buf.items().len());
+
+        buf.push(3);
+        buf.push(4); // overwrite
+        assert_eq!(buf.len(), buf.items().len());
+    }
+
+    #[test]
+    fn test_push_within_capacity() {
+        let mut buf = CircularBuffer::new(3);
+        buf.push(1);
+        buf.push(2);
+        assert_eq!(buf.items(), &[1, 2]);
+        assert_eq!(buf.len(), 2);
+    }
+
+    #[test]
+    fn test_push_overwrites_first_when_full() {
+        let mut buf = CircularBuffer::new(3);
+        buf.push(1);
+        buf.push(2);
+        buf.push(3);
+        buf.push(4); // overwrites 1
+        assert_eq!(buf.items(), &[4, 2, 3]);
+    }
+
+    #[test]
+    fn test_push_wraps_around() {
+        let mut buf = CircularBuffer::new(2);
+        buf.push(10);
+        buf.push(20);
+        buf.push(30); // overwrites 10
+        buf.push(40); // overwrites 20
+        assert_eq!(buf.items(), &[30, 40]);
+    }
+
+    #[test]
+    fn test_push_when_capacity_one() {
+        let mut buf = CircularBuffer::new(1);
+        buf.push(5);
+        buf.push(6);
+        assert_eq!(buf.items(), &[6]); // only the last survives
+    }
+}
+

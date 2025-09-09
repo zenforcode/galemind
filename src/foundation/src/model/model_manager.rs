@@ -11,6 +11,10 @@ pub struct ModelId(pub String);
 
 impl ModelId {
     pub fn from_path(models_path: PathBuf) -> Option<Self> {
+        if models_path.file_name().is_none() || models_path.extension().is_none() {
+            return None;
+        }
+
         models_path
             .file_name()
             .and_then(|os_model_str| os_model_str.to_str())
@@ -58,3 +62,45 @@ impl ModelManager {
         buffer.push(req);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::PathBuf;
+
+    #[test]
+    fn test_from_path_with_valid_file_extension() {
+        let path = PathBuf::from("/models/my_model.py");
+        let model_id = ModelId::from_path(path).unwrap();
+        assert_eq!(model_id.0, "my_model.py");
+    }
+
+    #[test]
+    fn test_from_path_with_subpath_and_filename() {
+        let path = PathBuf::from("/models/my_model/my_model.py");
+        let model_id = ModelId::from_path(path).unwrap();
+        assert_eq!(model_id.0, "my_model.py");
+    }
+
+    #[test]
+    fn test_from_path_with_no_filename() {
+        let path = PathBuf::from("/models/");
+        let model_id = ModelId::from_path(path);
+        assert!(model_id.is_none());
+    }
+
+    #[test]
+    fn test_from_path_with_subpath_and_no_filename() {
+        let path = PathBuf::from("/models/my_model");
+        let model_id = ModelId::from_path(path);
+        assert!(model_id.is_none());
+    }
+
+    #[test]
+    fn test_from_path_with_empty_path() {
+        let path = PathBuf::new();
+        let model_id = ModelId::from_path(path);
+        assert!(model_id.is_none());
+    }
+}
+
