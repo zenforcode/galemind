@@ -1,3 +1,18 @@
+/* A generic circular buffer (ring buffer) implementation.
+
+The `CircularBuffer<T>` stores up to a fixed number of elements (`capacity`).
+New items are appended until the buffer reaches its capacity. 
+When capacity is full, new items overwrite the oldest ones in a circular way.
+ 
+Key details:
+- `push` inserts a new element, overwriting the oldest when full.
+- `items` returns a slice of the current buffer contents in their stored order.
+- `capacity` returns available capacity
+- `len` returns current length
+- `is_empty` checks if buffer is empty
+- `is_full` checks if buffer is full
+*/ 
+
 #[derive(Debug, Default)]
 pub struct CircularBuffer<T> {
     buffer: Vec<T>,
