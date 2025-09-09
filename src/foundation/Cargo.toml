@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 anyhow = "1.0.98"
 async-trait = "0.1.88"
+dashmap = "6.1.0"

@@ -10,29 +10,34 @@ use crate::server::new_server_router;
 use anyhow::Result;
 use async_trait::async_trait;
 use axum::{Router, serve};
+use foundation::model::model_manager::ModelManager;
 use foundation::{InferenceServerBuilder, InferenceServerConfig};
 use std::error::Error;
 use std::net::SocketAddr;
+use std::sync::Arc;
 use tokio::net::TcpListener;
 use tower_http::trace::TraceLayer;
+
 pub struct RestServerBuilder {
     addr: SocketAddr,
     app: Router,
 }
+
 #[async_trait]
 impl InferenceServerBuilder for RestServerBuilder {
-    fn configure(context: InferenceServerConfig) -> Self {
+    fn configure(context: InferenceServerConfig, model_manager: Arc<ModelManager>) -> Self {
         let addr = format!("{}:{}", context.rest_hostname, context.rest_port)
             .parse()
             .expect("Invalid Host/Port");
         let app = Router::new()
             .nest("/{version}", new_server_router())
             .nest("/{version}/health", new_health_check_router())
-            .nest("/{version}/models", new_model_router())
+            .nest("/{version}/models", new_model_router(model_manager.clone()))
             .layer(TraceLayer::new_for_http());
 
         Self { addr, app }
     }
+
     async fn start(self) -> Result<(), Box<dyn Error + Send + Sync>> {
         let listener = TcpListener::bind(self.addr)
             .await

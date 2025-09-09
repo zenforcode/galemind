@@ -58,6 +58,13 @@ RUN ln -sf python3 /usr/bin/python && ln -sf pip3 /usr/bin/pip
 
 # Copy the compiled Rust binary
 COPY --from=builder /usr/local/cargo/bin/galemind /usr/local/bin/galemind
+
+ARG MODELS_DIR=/config/models
+ENV MODELS_DIR=${MODELS_DIR}
+
+# Copy predefined models
+COPY /models/src/gm_models ${MODELS_DIR}
+
 EXPOSE 8080
 EXPOSE 50051
 # Default command
